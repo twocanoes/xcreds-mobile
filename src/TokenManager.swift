@@ -1,0 +1,560 @@
+//
+//  TokenManager.swift
+//  xCreds
+//
+//  Created by Timothy Perfitt on 4/5/22.
+//
+import Foundation
+import OIDCLite
+
+struct IDToken:Decodable {
+    let iss,sub:String
+    let aud:StringOrArray
+    let iat, exp:Int
+    let email:String?
+    let unique_name, given_name,family_name,name:String?
+
+    enum CodingKeys: String, CodingKey {
+        case iss,sub,aud,name,given_name,family_name,email,iat,exp, unique_name
+
+    }
+}
+
+enum StringOrArray:Decodable{
+    case string(String)
+    case array([String])
+
+    init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let x = try? container.decode(String.self) {
+                self = .string(x)
+                return
+            }
+            if let x = try? container.decode([String].self) {
+                self = .array(x)
+                return
+            }
+            throw DecodingError.typeMismatch(StringOrArray.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for Names"))
+        }
+}
+protocol TokenManagerFeedbackDelegate {
+    func tokenError(_ err:String)
+    func credentialsUpdated(_ credentials:Creds)
+    func invalidCredentials()
+
+
+}
+@available(macOS, deprecated: 11)
+class TokenManager {
+
+
+    struct UserAccountInfo {
+        var fullName:String?
+        var firstName:String?
+        var lastName:String?
+        var username:String?
+        var fullUsername:String?
+        var groups:Array<String>?
+        var alias:String?
+        var kerberosPrincipalName:String?
+        var uid:String?
+    }
+    enum ParseHintsResult:Error {
+        case error(String)
+    }
+    enum ProcessTokenResult:Error {
+        case error(String)
+        case invalidCredentials
+    }
+    enum CalculateUserAccountInfoResult {
+        case success(UserAccountInfo)
+        case error(String)
+    }
+
+    var feedbackDelegate:TokenManagerFeedbackDelegate?
+    let defaults = UserDefaults.standard
+    private var oidcLocal:OIDCLite?
+    func oidc() async throws -> OIDCLite {
+        var scopes: [String]?
+        var additionalParameters:[String:String]? = nil
+
+        if let oidcPrivate = oidcLocal {
+           try await oidcPrivate.getEndpoints()
+
+            return oidcPrivate
+        }
+        let clientSecret = UserDefaults.standard.string(forKey: PrefKeys.clientSecret.rawValue)
+        let clientID = UserDefaults.standard.string(forKey: PrefKeys.clientID.rawValue)
+        let resource = UserDefaults.standard.string(forKey: PrefKeys.resource.rawValue)
+        if let scopesRaw = UserDefaults.standard.string(forKey: PrefKeys.scopes.rawValue) {
+            scopes = scopesRaw.components(separatedBy: " ")
+        }
+        if UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) == true {
+
+            additionalParameters = ["access_type":"offline"]
+        }
+        
+        let oidcLite = OIDCLite(discoveryURL: UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue) ?? "NONE", clientID: clientID ?? "NONE", clientSecret: clientSecret, redirectURI: UserDefaults.standard.string(forKey: PrefKeys.redirectURI.rawValue), scopes: scopes, additionalParameters:additionalParameters, resource: resource)
+        try await oidcLite.getEndpoints()
+        oidcLocal = oidcLite
+        return oidcLite
+
+
+    }
+
+    func resetOIDC(){
+        oidcLocal=nil
+    }
+    func tokenEndpoint() async throws -> String? {
+
+        let prefTokenEndpoint = UserDefaults.standard.string(forKey: PrefKeys.tokenEndpoint.rawValue)
+        if  prefTokenEndpoint != nil {
+            return prefTokenEndpoint
+        }
+
+
+        if let tokenEndpoint = try await oidc().OIDCTokenEndpoint {
+            return tokenEndpoint
+        }
+        return nil
+    }
+//    func getNewAccessToken()   {
+//        Task{
+//            do {
+//                //just care if we throw
+//                let _ = try await getNewAccessToken()
+//
+//            }
+//            catch let error as OIDCLiteError {
+//                switch error {
+//                case .unableToFindCode:
+//                    break
+//                case .unableToLoadEndpoint:
+//                    break
+//                case .unableToParseEndpoint:
+//                    break
+//                case .tokenError(_):
+//                    break
+//                case .authFailure(_):
+//                    break
+//                }
+//
+//            }
+//        }
+//    }
+//    func getNewAccessToken() async throws -> Creds? {
+//
+//        TCSLogWithMark()
+//
+//        let keychainUtil = KeychainUtil()
+//        TCSLogWithMark()
+//
+//        let clientID = defaults.string(forKey: PrefKeys.clientID.rawValue)
+//        let localCredFromKeychain =  keychainUtil.findPassword(serviceName: PrefKeys.password.rawValue,accountName:PrefKeys.password.rawValue)
+//
+//        TCSLogWithMark()
+//        //ropg
+//        if
+//            let localCredFromKeychain = localCredFromKeychain,
+//            UserDefaults.standard.bool(forKey: PrefKeys.shouldUseROPGForPasswordChangeChecking.rawValue) == true{
+//            TCSLogWithMark("Checking credentials using ROPG")
+//            guard let oidcUsername = currOidcUsername() else {
+//                throw ProcessTokenResult.error("no username for oidc config")
+//            }
+//            let shouldUseBasicAuthWithROPG = UserDefaults.standard.bool(forKey: PrefKeys.shouldUseBasicAuthWithROPG.rawValue)
+//
+//            var overrrideErrorArray = [String]()
+//            let ropgResponseValue = UserDefaults.standard.string(forKey: PrefKeys.ropgResponseValue.rawValue)
+//
+//
+//            if let ropgResponseValue = ropgResponseValue {
+//                overrrideErrorArray.append(ropgResponseValue)
+//                TCSLogWithMark("ropgResponseValue: \(ropgResponseValue)")
+//
+//            }
+//            else if let ropgResponseValueArray = UserDefaults.standard.array(forKey: PrefKeys.ropgResponseValue.rawValue) as? [String] {
+//                overrrideErrorArray.append(contentsOf: ropgResponseValueArray)
+//            }
+//
+//            let tokenResponse = try await oidc().requestTokenWithROPG(username: oidcUsername, password: localCredFromKeychain.password, basicAuth: shouldUseBasicAuthWithROPG, overrideErrors: overrrideErrorArray)
+//
+//            TCSLogWithMark("ROPG successful. Returning credentials for tokenInfo")
+//
+//            if let tokenResponse = tokenResponse {
+//                return Creds(password: localCredFromKeychain.password, tokens:tokenResponse )
+//            }
+//            return nil
+//        } //use the refresh token
+//        else if let refreshTokenFromKeychain =  keychainUtil.findPassword(serviceName: "xcreds ".appending(PrefKeys.refreshToken.rawValue),accountName:PrefKeys.refreshToken.rawValue){
+//            
+//            let refreshToken = refreshTokenFromKeychain.password
+//
+//            TCSLogWithMark("Using refresh token")
+//            let tokenInfo = try await oidc().refreshTokens(refreshToken)
+//            TCSLogWithMark("Got tokens")
+//
+//            return Creds(password: localCredFromKeychain?.password, tokens: tokenInfo)
+//
+//        } // nothing. let delegate know
+//        else if UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) == nil {
+//
+//            throw ProcessTokenResult.error("no discovery URL defined")
+//
+//         }
+//        else {
+//            TCSLogWithMark("clientID or refreshToken blank, or not foud it keychain. clientid: \(clientID ?? "empty")")
+//            throw ProcessTokenResult.error("no refresh token")
+//
+//        }
+//    }
+//    func currOidcUsername() -> String?{
+////        let currentUser = PasswordUtils.getCurrentConsoleUserRecord()
+//
+//        if let userNames = try? currentUser?.values(forAttribute: "dsAttrTypeNative:_xcreds_oidc_full_username") as? [String], userNames.count>0, let username = userNames.first
+//        {
+//            return username
+//        }
+//        else if let oidcUsernamePrefs = UserDefaults.standard.string(forKey:"_xcreds_oidc_full_username" ), oidcUsernamePrefs.isEmpty == false {
+//            return oidcUsernamePrefs
+//
+//        }
+//        return nil
+//    }
+    func idTokenData(jwtString:String) throws -> Data {
+        let array = jwtString.components(separatedBy: ".")
+
+        if array.count != 3 {
+            TCSLogErrorWithMark("idToken is invalid")
+            throw ProcessTokenResult.error("The identity token is incorrect length.")
+            //            mechanismDelegate.denyLogin(message:"The identity token is incorrect length.")
+        }
+        let body = array[1]
+        TCSLogWithMark("base64 encoded IDToken: \(body)");
+        guard let data = base64UrlDecode(value:body ) else {
+            TCSLogErrorWithMark("error decoding id token base64")
+            throw ProcessTokenResult.error("The identity token could not be decoded from base64.")
+        }
+        return data
+
+    }
+    func tokenInfo(fromCredentials credentials:Creds) throws -> Dictionary<String, Any>? {
+        //if we have tokens, that means that authentication was successful.
+
+
+        guard let idToken = credentials.idToken else {
+            TCSLogErrorWithMark("invalid idToken")
+            throw ProcessTokenResult.error("invalid idToken")
+        }
+
+        let data = try idTokenData(jwtString: idToken)
+        if let decodedTokenString = String(data: data, encoding: .utf8) {
+            TCSLogWithMark("IDToken:\(decodedTokenString)")
+        }
+
+        let decoder = JSONDecoder()
+        var idTokenObject:IDToken
+        do {
+            idTokenObject = try decoder.decode(IDToken.self, from: data)
+
+        }
+        catch {
+            TCSLogErrorWithMark("error decoding idtoken::")
+            TCSLogErrorWithMark("Token:\(data)")
+            throw ProcessTokenResult.error("The identity token could not be decoded from json")
+        }
+
+        let idTokenInfo = jwtDecode(value: idToken)  //dictionary for mapping
+        guard var idTokenInfo = idTokenInfo else {
+            throw ProcessTokenResult.error("No idTokenInfo found")
+
+            //            mechanismDelegate.denyLogin(message:"No idTokenInfo found.")
+            //            return
+        }
+
+        idTokenInfo["idToken"]=idTokenObject
+        return idTokenInfo
+    }
+//    func findUserAndUpdatePassword(idTokenInfo:Dictionary<String, Any>,newPassword:String) -> SelectLocalAccountWindowController.VerifyLocalCredentialsResult?{
+//
+//        TCSLogWithMark()
+//        guard let subValue = idTokenInfo["sub"] as? String, let issuerValue = idTokenInfo["iss"] as? String else {
+//            TCSLogWithMark("no sub or iss")
+//
+//            return nil
+//        }
+//
+//        TCSLogWithMark("getting users")
+//        let nonSystemUsers = try? getAllNonSystemUsers()
+//        let existingUser = try? getUserRecord(sub: subValue, iss: issuerValue)
+//        let shouldPromptForMigration = UserDefaults.standard.bool(forKey: PrefKeys.shouldPromptForMigration.rawValue)
+//
+//        if shouldPromptForMigration == false {
+//            TCSLogWithMark("not prompting for migration")
+//
+//        }
+//        if  let existingUser = existingUser, let odUsername = existingUser.recordName  {
+//            TCSLogWithMark("prior local user found. using.")
+//
+//            return .successful(odUsername)
+//        }
+//        else if let nonSystemUsers = nonSystemUsers, nonSystemUsers.count>0, shouldPromptForMigration == true {
+//
+//            TCSLogWithMark("Preference set to prompt for migration and there are existing users, so prompting")
+//
+//
+//            return SelectLocalAccountWindowController.selectLocalAccountAndUpdate(newPassword: newPassword)
+//        }
+//        return .createNewAccount
+//    }
+    func setupUserAccountInfo(idTokenInfo:Dictionary<String, Any>)  -> CalculateUserAccountInfoResult {
+
+        TCSLogWithMark()
+        var userAccountInfo = UserAccountInfo()
+        guard let idTokenObject = idTokenInfo["idToken"] as? IDToken else {
+            return .error("invalid token object")
+
+        }
+        let defaultsUsername = UserDefaults.standard.string(forKey: PrefKeys.username.rawValue)
+
+        // username static map
+        if let defaultsUsername = defaultsUsername, defaultsUsername.count>0 {
+            userAccountInfo.username = defaultsUsername
+        }
+        else if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapUserName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String, let leftSide = mapValue.components(separatedBy: "@").first, leftSide.count>0{
+
+            TCSLogWithMark()
+            userAccountInfo.username = leftSide.replacingOccurrences(of: " ", with: "_").stripped
+            TCSLogWithMark("mapped username found: \(mapValue) clean version:\(userAccountInfo.username ?? "nil")")
+        }
+        else {
+            TCSLogWithMark()
+            var emailString:String
+
+            if let email = idTokenObject.email, email.count>0  {
+                emailString=email.lowercased()
+            }
+            else if let uniqueName=idTokenObject.unique_name, uniqueName.count>0 {
+                emailString=uniqueName
+            }
+
+            else {
+                TCSLogWithMark("no username found. Using sub.")
+                emailString=idTokenObject.sub
+            }
+            guard let tUsername = emailString.components(separatedBy: "@").first?.lowercased() else {
+                TCSLogErrorWithMark("email address invalid")
+
+                return .error("The email address from the identity token is invalid")
+
+            }
+            TCSLogWithMark("username found: \(tUsername)")
+            userAccountInfo.username = tUsername
+        }
+
+        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFullUserName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+            TCSLogWithMark("setting fullUsername to \(mapValue)")
+            userAccountInfo.fullUsername = mapValue
+            
+        }
+
+        else if let email = idTokenObject.email {
+            TCSLogWithMark()
+            userAccountInfo.fullUsername = email.lowercased()
+
+        }
+        else if let mapValue = idTokenInfo["upn"] as? String {
+            TCSLogWithMark()
+            userAccountInfo.fullUsername = mapValue
+
+        }
+
+            
+
+        //kerberos principal name
+
+        //mapKerberosPrincipalName
+
+        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapKerberosPrincipalName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+            //we have a mapping so use that.
+            TCSLogWithMark("mapKerberosPrincipalName name mapped to: \(mapKey)")
+            userAccountInfo.kerberosPrincipalName = mapValue
+        }
+
+        if UserDefaults.standard.bool(forKey: PrefKeys.shouldUpdateKerberosUserPrincipalADDomain.rawValue) == true,
+           let adDomain = UserDefaults.standard.string(forKey: PrefKeys.aDDomain.rawValue) {
+
+            if userAccountInfo.kerberosPrincipalName?.uppercased().hasSuffix(adDomain.uppercased())==false{
+                TCSLogWithMark("kerberosPrincipalName name does not end with \(adDomain). Updating...")
+
+                let principalNameWithoutDomain = userAccountInfo.kerberosPrincipalName?.split(separator: "@").first ?? ""
+                userAccountInfo.kerberosPrincipalName = principalNameWithoutDomain + "@" + adDomain
+
+                TCSLogWithMark("kerberosPrincipalName name is now \(userAccountInfo.kerberosPrincipalName ?? "")")
+
+            }   
+        }
+
+        //full name
+        TCSLogWithMark("checking map_fullname")
+
+        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFullName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+            //we have a mapping so use that.
+            TCSLogWithMark("full name mapped to: \(mapKey)")
+            userAccountInfo.fullName = mapValue
+
+        }
+
+        else if let firstName = idTokenObject.given_name, let lastName = idTokenObject.family_name {
+            TCSLogWithMark("firstName: \(firstName)")
+            TCSLogWithMark("lastName: \(lastName)")
+            userAccountInfo.fullName = "\(firstName) \(lastName)"
+
+        }
+
+
+        //first name
+        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFirstName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+            //we have a mapping for username, so use that.
+            TCSLogWithMark("first name mapped to: \(mapKey)")
+            userAccountInfo.firstName = mapValue
+        }
+
+        else if let given_name = idTokenObject.given_name {
+            TCSLogWithMark("firstName from token: \(given_name)")
+            userAccountInfo.firstName = given_name
+
+        }
+        //last name
+        TCSLogWithMark("checking map_lastname")
+
+        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapLastName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+            //we have a mapping for lastName, so use that.
+            TCSLogWithMark("last name mapped to: \(mapKey)")
+            userAccountInfo.lastName = mapValue
+        }
+
+        else if let familyName = idTokenObject.family_name {
+            TCSLogWithMark("lastName from token: \(familyName)")
+            userAccountInfo.lastName = familyName
+
+        }
+        //groups
+        if let mapValue = idTokenInfo["groups"] as? Array<String> {
+            TCSLogWithMark("setting groups: \(mapValue)")
+            userAccountInfo.groups = mapValue
+        }
+        else {
+
+            TCSLogWithMark("No groups found")
+        }
+
+        let aliasClaim = UserDefaults.standard.string(forKey: PrefKeys.aliasName.rawValue)
+        if let aliasClaim = aliasClaim, let aliasClaimValue = idTokenInfo[aliasClaim] as? String {
+            TCSLogWithMark("found alias claim: \(aliasClaim):\(aliasClaimValue)")
+
+            userAccountInfo.alias = aliasClaimValue
+        }
+        else {
+            TCSLogWithMark("no alias claim: \(aliasClaim ?? "none")")
+        }
+
+        //uid
+        let mapUID = UserDefaults.standard.string(forKey: PrefKeys.mapUID.rawValue)
+
+        if let mapUID = mapUID, let uid = idTokenInfo[mapUID] as? String {
+            if let mapValueInt = Int(uid), mapValueInt > 499 {
+                TCSLogWithMark("setting uid: \(uid)")
+                userAccountInfo.uid = uid
+            }
+            else {
+                TCSLogWithMark("invalid uid mapping value")
+            }
+
+        }
+        else {
+            TCSLogWithMark("No uid mapping")
+        }
+
+        return .success(userAccountInfo)
+
+    }
+
+}
+// MARK: OIDC Lite Delegate Functions
+@available(macOS, deprecated: 11)
+extension TokenManager {
+
+    func ropgSuccess(errorMessage: String) {
+        TCSLogWithMark("ropgSuccess: \(errorMessage)")
+        feedbackDelegate?.tokenError(errorMessage)
+
+    }
+
+
+    func authFailure(message: String) {
+//        XCredsAudit().auditError(message)
+        TCSLogWithMark("authFailure: \(message)")
+        feedbackDelegate?.tokenError(message)
+    }
+
+    func tokenResponse(tokens: OIDCLite.TokenResponse) {
+
+
+
+        TCSLogWithMark("======== tokenResponse =========")
+        RunLoop.main.perform {
+            let googleAuth = UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue)
+
+
+            let xcredCreds = Creds(password: nil, tokens: tokens)
+
+            if xcredCreds.hasAccessAndRefresh() {
+                TCSLogWithMark("Found access and refresh token")
+
+            }
+            if googleAuth {
+                TCSLogWithMark("Found google auth")
+
+            }
+            if xcredCreds.hasAccess() {
+                TCSLogWithMark("found access token")
+
+            }
+            if googleAuth && xcredCreds.hasAccess() {
+                TCSLogWithMark("Found google auth and access token")
+
+            }
+
+            if xcredCreds.hasAccessAndRefresh() || (googleAuth && xcredCreds.hasAccess()) {
+//                XCredsAudit().refreshTokenUpdated(true)
+                self.feedbackDelegate?.credentialsUpdated(xcredCreds)
+            }
+//            else if let dict = tokens.jsonDict, let error = dict["error"] as? String, error == ropgResponseValue ?? "interaction_required" {
+//                TCSLogWithMark("ropgResponseValue matched to \(error)")
+//                XCredsAudit().refreshTokenUpdated(true)
+//
+//                self.feedbackDelegate?.credentialsUpdated(xcredCreds)
+//            }
+            else if let dict = tokens.jsonDict, let error = dict["error"] as? String, error == "invalid_grant" {
+                TCSLogWithMark("invalid grant, so password wrong: \(error)")
+//                XCredsAudit().auditError(error)
+
+                self.feedbackDelegate?.invalidCredentials()
+            }
+            else {
+                let err = "error gettings tokens: jsonDict:\(String(describing: tokens.jsonDict?.debugDescription))"
+
+                self.feedbackDelegate?.tokenError(err)
+            }
+
+        }
+    }
+}
+
+extension String {
+
+    var stripped: String {
+        let okayChars = Set("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLKMNOPQRSTUVWXYZ1234567890+-._")
+        return self.filter {okayChars.contains($0) }
+    }
+}

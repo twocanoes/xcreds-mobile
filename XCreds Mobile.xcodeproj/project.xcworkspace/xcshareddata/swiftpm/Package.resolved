@@ -1,0 +1,15 @@
+{
+  "originHash" : "dd395466d25a1287a94c90581323eaffc54d877ed4b6b81389c9643a99b6ce99",
+  "pins" : [
+    {
+      "identity" : "oidclite",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/twocanoes/OIDCLite.git",
+      "state" : {
+        "branch" : "develop",
+        "revision" : "dad2dbea722711d8ba3f774ac0f850032b160a33"
+      }
+    }
+  ],
+  "version" : 3
+}
