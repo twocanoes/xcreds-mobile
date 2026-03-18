@@ -25,6 +25,10 @@ struct ContentView: View {
     @Environment(\.authorizationController) private var authorizationController
     @Environment(\.scenePhase) private var scenePhase
     
+    @State private var showingPopover = true
+
+    
+    
     let currentDate = Date()
     //"Sat 24 Jan"
     
@@ -116,9 +120,32 @@ struct ContentView: View {
                         LocalLoginView()
                     }
                     VStack{
+
                         Spacer()
                         
                         HStack {
+                            Button("System Info") {
+                                showingPopover = true
+                               
+                                
+                            }
+                            .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
+                                
+                                VStack(alignment: .leading){
+                                    Text("Name: \(UIDevice.current.name)")
+                                    Text("System Version: \(UIDevice.current.systemVersion)")
+                                    Text("System Name: \(UIDevice.current.systemName)")
+                                    Text("Model: \(UIDevice.current.model)")
+
+
+
+                                }
+                                .padding()
+
+                            }
+                            .padding()
+
+
                             Spacer()
                             Button(action:{
                                 optionsSheetIsPresented=true
@@ -164,6 +191,13 @@ struct ContentView: View {
                             .padding()
                             .buttonStyle(.bordered)
                             Button("Exit SAM"){
+                                UIApplication.shared.setAlternateIconName("AppIcon-2"){error in
+                                    if let error = error {
+                                        print(error.localizedDescription)
+                                    } else {
+                                        print("Success!")
+                                    }
+}
                                 UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                                 })
                             }
@@ -189,6 +223,7 @@ struct ContentView: View {
                     loggedIn=false
 
                 }
+
                 
             }
         }
@@ -196,6 +231,8 @@ struct ContentView: View {
             UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
                 samActive=enabled
             })
+            UIApplication.shared.setAlternateIconName(nil)
+
             loadPage=true
             updatePrefsFromManagedPrefs()
             if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
