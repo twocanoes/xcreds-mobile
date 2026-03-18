@@ -95,7 +95,11 @@ struct ContentView: View {
                 
                     .onSubmit {
                         loggedIn=true
-                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in })
+                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                            samActive=false
+
+                        })
+                        
 
                     }
                 
@@ -181,7 +185,9 @@ struct ContentView: View {
                             Button("wifi"){
                                 UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                                     WiFiController.shared.setupNetwork { success in
-                                        UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler:{_ in })
+                                        UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler:{enabled in
+                                            samActive = false
+                                        })
                                     }
                                     
 
@@ -199,6 +205,7 @@ struct ContentView: View {
                                     }
 }
                                 UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                                    samActive=false
                                 })
                             }
                             .padding()
@@ -229,7 +236,7 @@ struct ContentView: View {
         }
         .onAppear(){
             UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                samActive=enabled
+                samActive=true
             })
             UIApplication.shared.setAlternateIconName(nil)
 
@@ -244,7 +251,7 @@ struct ContentView: View {
             if newPhase == .active {
                 print("Active")
                 UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                    samActive=enabled
+                    samActive=true
                     
                 })
                 loadPage=true
