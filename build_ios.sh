@@ -42,7 +42,7 @@ xcodebuild -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME}" -configurati
 xcodebuild -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME}" -configuration Release archive -archivePath "${build_folder}/${PROJECT_NAME}.xcarchive"
  
 
-xcodebuild -exportArchive -exportFormat ipa -archivePath "${build_folder}/${PROJECT_NAME}.xcarchive" -exportOptionsPlist exportOptions.plist -exportPath "${build_folder}" -allowProvisioningUpdates 
+xcodebuild -exportArchive -archivePath "${build_folder}/${PROJECT_NAME}.xcarchive" -exportOptionsPlist exportOptions.plist -exportPath "${build_folder}" -allowProvisioningUpdates 
 
 zip --symlinks --recurse-paths "${IPA}" .
 #./package_ipa.sh "${build_folder}/${PROJECT_NAME}.xcarchive/Products/Applications/Smart Card Utility.app" "${build_folder}/${PROJECT_NAME}.xcarchive/Products/${APP_NAME}.ipa"
