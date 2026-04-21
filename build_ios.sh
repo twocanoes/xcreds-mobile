@@ -47,6 +47,6 @@ xcodebuild -exportArchive -archivePath "${build_folder}/${PROJECT_NAME}.xcarchiv
 . ../build/github_creds.sh
 export GH_TOKEN=${github_api_token}
 
-gh release create "${version}.${build_number}" --generate-notes "${build_folder}"/"${APP_NAME}.ipa"
+gh release create "${version}.${build_number}" --generate-notes "${build_folder}"/"${APP_NAME}.ipa" -p
 
 echo "build ${build_number} finished"
