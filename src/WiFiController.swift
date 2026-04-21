@@ -7,15 +7,17 @@
 
 import NetworkExtension
 
+
+struct WifiNetwork: Identifiable, Hashable{
+    let name: String
+    let password:String
+    let id = UUID()
+}
 class WiFiController{
     static let shared = WiFiController()
-    func setupNetwork( complete:@escaping((Bool)->Void)){
+    func setupNetwork(_ wifiNetwork:WifiNetwork, complete:@escaping((Bool)->Void)){
         
-        guard let ssid = UserDefaults.standard.string(forKey: PrefKeys.ssid.rawValue), let password = UserDefaults.standard.string(forKey: PrefKeys.wifiPassword.rawValue) else {
-            return
-        }
-        
-        let hotspotConfig = NEHotspotConfiguration(ssid: ssid, passphrase: password, isWEP: false)//Secured connections
+        let hotspotConfig = NEHotspotConfiguration(ssid: wifiNetwork.name, passphrase: wifiNetwork.password, isWEP: false)//Secured connections
         print(hotspotConfig)
         NEHotspotConfigurationManager.shared.apply(hotspotConfig) {  error in
            if let error = error {

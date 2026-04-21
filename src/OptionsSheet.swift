@@ -9,8 +9,6 @@ import UniformTypeIdentifiers
 struct OptionsSheet: View {
 
     
-    @AppStorage(PrefKeys.ssid.rawValue) var ssid: String = ""
-    @AppStorage(PrefKeys.wifiPassword.rawValue) var wifiPassword: String = ""
     @AppStorage(PrefKeys.discoveryURL.rawValue) var discoveryURL: String = ""
     @AppStorage(PrefKeys.clientSecret.rawValue) var clientSecret: String = ""
     @AppStorage(PrefKeys.clientID.rawValue) var clientID: String = ""
@@ -37,9 +35,9 @@ struct OptionsSheet: View {
     var body: some View {
         VStack (alignment: .leading){
             VStack{
-                Text("Settings")
-                    .font(.title)
-                    .padding()
+//                Text("Settings")
+//                    .font(.title)
+//                    .padding()
 
                 List {
                     Section(header: Text("OIDC")) {
@@ -76,24 +74,24 @@ struct OptionsSheet: View {
 
                     }
                     .disabled(true)
-                    Section(header: Text("WiFi")) {
-                        HStack{
-                                            Text("WiFi SSID:")
-                                            TextField("ssid", text: $ssid)
-                        
-                                        }
-                                        .padding([.top,.leading,.trailing])
-                        
-                                        HStack{
-                                            Text("WiFi Password:")
-                        
-                                            TextField("Password", text: $wifiPassword)
-                        
-                                        }
-                                        .padding([.top,.leading,.trailing])
-                                        
-                    }
-                    .disabled(true)
+//                    Section(header: Text("WiFi")) {
+//                        HStack{
+//                                            Text("WiFi SSID:")
+//                                            TextField("ssid", text: $ssid)
+//                        
+//                                        }
+//                                        .padding([.top,.leading,.trailing])
+//                        
+//                                        HStack{
+//                                            Text("WiFi Password:")
+//                        
+//                                            TextField("Password", text: $wifiPassword)
+//                        
+//                                        }
+//                                        .padding([.top,.leading,.trailing])
+//                                        
+//                    }
+//                    .disabled(true)
                     Section(header: Text("Load Settings From URL")) {
                         TextField("URL", text: $settingsURL)
                         Button("Load"){
