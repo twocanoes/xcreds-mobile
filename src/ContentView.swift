@@ -25,10 +25,28 @@ struct ContentView: View {
     @Environment(\.authorizationController) private var authorizationController
     @Environment(\.scenePhase) private var scenePhase
     
-    @State private var showingPopover = true
+    @State private var showingPopover = false
+    @State private var showingWifiPopover = false
+    @State private var wifiNetworks:[WifiNetwork] = []
+    
+    @State private var wifiSelection:WifiNetwork?
 
-    
-    
+    var longPress: some Gesture {
+        LongPressGesture(minimumDuration: 6)
+
+            .onEnded { finished in
+            
+                if UserDefaults.standard.bool(forKey: PrefKeys.shouldAllowExitSAM.rawValue) == false {
+                    return
+                }
+                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                    samActive=false
+                })
+
+            }
+    }
+
+
     let currentDate = Date()
     //"Sat 24 Jan"
     
@@ -108,16 +126,31 @@ struct ContentView: View {
                 
             }
             .padding(.bottom,50)
+            
         }
+        
     }
     
     var body: some View {
         VStack {
             if loggedIn == false {
                 ZStack{
-                    
+                    Image("DefaultAerial")
+                        .resizable(resizingMode: .stretch)
+                        .ignoresSafeArea()
+                        
+                        .background(.red)
+
+//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
                     if showWebLogin == true {
                         LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC )
+                            .refreshable{
+                                webView.loadPage()
+
+                            }
+                            .frame(width: 400,height: 400)
+                            
                     
                     }
                     else {
@@ -130,9 +163,12 @@ struct ContentView: View {
                         HStack {
                             Button("System Info") {
                                 showingPopover = true
-                               
+                                
                                 
                             }
+
+                            .buttonStyle(.borderedProminent)
+                            
                             .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
                                 
                                 VStack(alignment: .leading){
@@ -140,86 +176,115 @@ struct ContentView: View {
                                     Text("System Version: \(UIDevice.current.systemVersion)")
                                     Text("System Name: \(UIDevice.current.systemName)")
                                     Text("Model: \(UIDevice.current.model)")
-
-
-
+                                    
+                                    
+                                    
                                 }
                                 .padding()
-
-                            }
-                            .padding()
-
-
-                            Spacer()
-                            Button(action:{
-                                optionsSheetIsPresented=true
-                            }) {
-                                Image(systemName: "gear.circle.fill")
-                                    .resizable() // This allows the image to be resized
-                                    .frame(width: 25, height: 25) // This sets the size of the image
                                 
                             }
-                            .controlSize(.extraLarge)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.trailing, 8)
-                            .sheet(isPresented: $optionsSheetIsPresented) {
-                                if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
-                                    showWebLogin=false
-                                    showWebLogin=true
-                                    loadPage=true
-                                    resetOIDC=true
-
-                                }
-                                else {
-                                    showWebLogin=false
-                                }
-
-                            } content: {
-                                OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
-                            }
-                            .buttonStyle(.bordered)
-                            .keyboardShortcut(",")
-                            .labelStyle(.iconOnly)
                             .padding()
                             
-                            Button("wifi"){
-                                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-                                    WiFiController.shared.setupNetwork { success in
-                                        UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler:{enabled in
-                                            samActive = false
-                                        })
+                            
+                            Spacer()
+//                            Button(action:{
+//                                optionsSheetIsPresented=true
+//                            }) {
+//                                Image(systemName: "gear.circle.fill")
+//                                    .resizable() // This allows the image to be resized
+//                                    .frame(width: 25, height: 25) // This sets the size of the image
+//                                
+//                            }
+//                            .controlSize(.extraLarge)
+//                            .frame(maxWidth: .infinity, alignment: .trailing)
+//                            .padding(.trailing, 8)
+//                            .sheet(isPresented: $optionsSheetIsPresented) {
+//                                if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
+//                                    showWebLogin=false
+//                                    showWebLogin=true
+//                                    loadPage=true
+//                                    resetOIDC=true
+//                                    
+//                                }
+//                                else {
+//                                    showWebLogin=false
+//                                }
+                                
+//                            } content: {
+//                                OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
+//                            }
+//                            .buttonStyle(.borderedProminent)
+//                            .keyboardShortcut(",")
+//                            .labelStyle(.iconOnly)
+//                            .padding()
+//                            
+//                            
+                            
+                            if wifiNetworks.count>0{
+                                Button("wifi"){
+                                    showingWifiPopover=true
+                                    //
+                                }
+                                .padding()
+                                .buttonStyle(.borderedProminent)
+                                
+                                .popover(isPresented: $showingWifiPopover, arrowEdge: .bottom) {
+                                    
+                                    
+                                    
+                                    List(){
+                                        Section(header: Text("Please select a WiFi network to join")){
+                                            ForEach(wifiNetworks) { network in
+                                                
+                                                Button(network.name){
+                                                    showingWifiPopover=false
+                                                    UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                                                        WiFiController.shared.setupNetwork (network) { success in
+                                                            UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler:{enabled in
+                                                            })
+                                                        }
+                                                        
+                                                        
+                                                    })
+                                                }
+                                                
+                                            }
+                                        }
                                     }
                                     
-
-                                })
-
+                                    .frame(minWidth: 400, minHeight: 200)
+                                    
+                                    
+                                }
+                                .padding()
+                                
                             }
-                            .padding()
-                            .buttonStyle(.bordered)
-                            Button("Exit SAM"){
-                                UIApplication.shared.setAlternateIconName("AppIcon-2"){error in
-                                    if let error = error {
-                                        print(error.localizedDescription)
-                                    } else {
-                                        print("Success!")
-                                    }
-}
-                                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-                                    samActive=false
-                                })
-                            }
-                            .padding()
-                            .buttonStyle(.bordered)
+                            
+//                            Button("Exit SAM"){
+//                                UIApplication.shared.setAlternateIconName("AppIcon-2"){error in
+//                                    if let error = error {
+//                                        print(error.localizedDescription)
+//                                    } else {
+//                                        print("Success!")
+//                                    }
+//}
+//                                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+//                                    samActive=false
+//                                })
+//                            }
+//                            .padding()
+//                            .buttonStyle(.borderedProminent)
                             Button("Refresh"){
                                 webView.loadPage()
                             }
                             .padding()
-                            .buttonStyle(.bordered)
+                            .buttonStyle(.borderedProminent)
                         }
                     }
                     
                 }
-                
+                .gesture(longPress)
+
             }
             else {
                 
@@ -233,27 +298,38 @@ struct ContentView: View {
 
                 
             }
+
         }
         .onAppear(){
             UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
                 samActive=true
             })
             UIApplication.shared.setAlternateIconName(nil)
-
+            
             loadPage=true
             updatePrefsFromManagedPrefs()
             if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
                 showWebLogin=true
+            }
+            guard let wifiNetworksFromPrefs = UserDefaults.standard.array(forKey: PrefKeys.wifiNetworks.rawValue) as? Array<Dictionary<String,String>> else {
+                return
+            }
+            for wifiNetworkFromPrefs in wifiNetworksFromPrefs {
+                if let networkName = wifiNetworkFromPrefs["ssid"], let networkPassword = wifiNetworkFromPrefs["wifiPassword"]{
+                    self.wifiNetworks.append(WifiNetwork(name: networkName, password: networkPassword))
+                }
             }
         }
         
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 print("Active")
-                UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                    samActive=true
-                    
-                })
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { // Change `2.0` to the desired number of seconds.
+                    UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
+                        samActive=true
+                        
+                    })
+                }
                 loadPage=true
             } else if newPhase == .inactive {
                 print("Inactive")
