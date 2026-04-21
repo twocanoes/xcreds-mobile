@@ -32,7 +32,7 @@ fi
 
 
 git commit -a -m 'updated build number, manifest and other build files'
-git tag -a "tag-${version}(${build_number})" -m "tag-${version}(${buildNumber})"
+git tag -a "${version}(${build_number})" -m "${version}(${buildNumber})"
 #git push --tags
 #git push
 
