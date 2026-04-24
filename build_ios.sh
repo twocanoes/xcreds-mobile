@@ -44,7 +44,7 @@ xcodebuild -project "${PROJECT_NAME}.xcodeproj" -scheme "${SCHEME}" -configurati
 
 xcodebuild -exportArchive -archivePath "${build_folder}/${PROJECT_NAME}.xcarchive" -exportOptionsPlist exportOptions.plist -exportPath "${build_folder}" -allowProvisioningUpdates 
 
-xcrun altool --upload-app --type ios --file "${build_folder}/${PROJECT_NAME}.xcarchive/Products/${APP_NAME}.ipa"  -u "${app_store_id}" -p "${app_store_password}"
+xcrun altool --upload-app --type ios --file "${build_folder}"/"${APP_NAME}.ipa"  -u "${app_store_id}" -p "${app_store_password}"
 
 . ../build/github_creds.sh
 export GH_TOKEN=${github_api_token}
