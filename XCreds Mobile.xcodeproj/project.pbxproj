@@ -15,6 +15,7 @@
 		76B8073B2F6A38BC00ECD82A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */; };
 		76B8073D2F6A38BC00ECD82A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */; };
 		76B8074E2F6A38BD00ECD82A /* xcreds-mobile-widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AAFB24612F9FF98200F1C98A /* NSBundle+FindBundlePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B0033F2F491A9E00C4B98C /* NSBundle+FindBundlePath.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -334,6 +335,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFB24612F9FF98200F1C98A /* NSBundle+FindBundlePath.swift in Sources */,
 				76B0035B2F491ABC00C4B98C /* OSLoggingHelper.swift in Sources */,
 				7650D4542F57D979009B6C16 /* Helper+JWTDecode.swift in Sources */,
 				7650D4A52F57E6EE009B6C16 /* ManagedPrefs.swift in Sources */,

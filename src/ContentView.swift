@@ -130,7 +130,20 @@ struct ContentView: View {
         }
         
     }
-    
+    func versionString() -> String? {
+        let fullVersionString: String?
+        if let bundle = Bundle.findBundleWithName(name: "XCreds"),
+           let infoPlist = bundle.infoDictionary,
+           let versionString = infoPlist["CFBundleShortVersionString"],
+           let buildString = infoPlist["CFBundleVersion"]
+        {
+            fullVersionString = "\(versionString) (\(buildString))"
+        } else {
+            fullVersionString = nil
+        }
+        return fullVersionString
+    }
+
     var body: some View {
         VStack {
             if loggedIn == false {
@@ -176,9 +189,9 @@ struct ContentView: View {
                                     Text("System Version: \(UIDevice.current.systemVersion)")
                                     Text("System Name: \(UIDevice.current.systemName)")
                                     Text("Model: \(UIDevice.current.model)")
-                                    
-                                    
-                                    
+                                    if let version = versionString() {
+                                        Text("XCreds: \(version)")
+                                    }
                                 }
                                 .padding()
                                 
