@@ -130,6 +130,7 @@ struct ContentView: View {
         }
         
     }
+    // Pull version and build info from bundle.
     func versionString() -> String? {
         let fullVersionString: String?
         if let bundle = Bundle.findBundleWithName(name: "XCreds"),
