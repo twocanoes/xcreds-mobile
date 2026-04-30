@@ -104,7 +104,7 @@ struct ContentView: View {
                         loggedIn=true
                         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                             samActive=false
-
+                            URLSession.shared.postLoginMessage()
                         })
                         
 
@@ -337,7 +337,7 @@ struct ContentView: View {
             }
             else {
                 UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                    
+                    URLSession.shared.postLogoutMessage()
                 })
             }
 //                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
@@ -354,7 +354,7 @@ struct ContentView: View {
 //                }
 //            }
             
-            
+
             loadPage=true
             readDefaults()
             updatePrefsFromManagedPrefs()
@@ -378,10 +378,8 @@ struct ContentView: View {
                 UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
                     samActive=true
                     webView.loadPage()
-
-                    
+                    URLSession.shared.postLogoutMessage()
                 })
-                //                }
                 loadPage=true
             } else {
                 webView.loadPage()

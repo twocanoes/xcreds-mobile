@@ -34,9 +34,8 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     
 
     func showLoginSuccessful(){
-        
         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
-            
+            URLSession.shared.postLoginMessage()
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
                 exit(0);
             }
@@ -434,7 +433,6 @@ extension WebView: WKNavigationDelegate {
                             let tokenResponse = try await tokenManager.oidc().getToken(code: code, basicAuth: shouldUseBasicAuth)
                             TCSLogWithMark("got token. Token ID: \(tokenResponse.idToken ?? "" )")
                             tokenManager.tokenResponse(tokens: tokenResponse)
-
                         }
                         catch{
                             TCSLogWithMark("error: \(error)")
