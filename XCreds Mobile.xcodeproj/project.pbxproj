@@ -13,6 +13,7 @@
 		7650D4A52F57E6EE009B6C16 /* ManagedPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7650D4A42F57E6EE009B6C16 /* ManagedPrefs.swift */; };
 		7664F84E2FA44F33008ADAFE /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7664F84D2FA44F33008ADAFE /* AuthenticationServices.framework */; };
 		7664F8592FA44F33008ADAFE /* XCreds Password.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7664F84C2FA44F33008ADAFE /* XCreds Password.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7664F8AB2FA4F44F008ADAFE /* OIDCLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7664F8AA2FA4F44F008ADAFE /* OIDCLite */; };
 		76B0035B2F491ABC00C4B98C /* OSLoggingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B0034A2F491A9E00C4B98C /* OSLoggingHelper.swift */; };
 		76B8073B2F6A38BC00ECD82A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */; };
 		76B8073D2F6A38BC00ECD82A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */; };
@@ -181,6 +182,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7664F84E2FA44F33008ADAFE /* AuthenticationServices.framework in Frameworks */,
+				7664F8AB2FA4F44F008ADAFE /* OIDCLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +323,7 @@
 			);
 			name = "XCreds Password";
 			packageProductDependencies = (
+				7664F8AA2FA4F44F008ADAFE /* OIDCLite */,
 			);
 			productName = "XCreds Password";
 			productReference = 7664F84C2FA44F33008ADAFE /* XCreds Password.appex */;
@@ -868,6 +871,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		7605C3D22F268408009233BC /* OIDCLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7605C3D12F268408009233BC /* XCRemoteSwiftPackageReference "OIDCLite" */;
+			productName = OIDCLite;
+		};
+		7664F8AA2FA4F44F008ADAFE /* OIDCLite */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7605C3D12F268408009233BC /* XCRemoteSwiftPackageReference "OIDCLite" */;
 			productName = OIDCLite;
