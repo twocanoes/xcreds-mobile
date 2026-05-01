@@ -22,6 +22,8 @@ struct LoginWebView: UIViewRepresentable {
     
     func updateUIView(_ uiView: WebView, context: Context) {
         
+        readDefaults()
+
         updatePrefsFromManagedPrefs()
         
         if resetOIDC==true {

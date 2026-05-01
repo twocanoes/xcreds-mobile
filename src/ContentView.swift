@@ -332,6 +332,7 @@ struct ContentView: View {
             UIApplication.shared.setAlternateIconName(nil)
             
             loadPage=true
+            readDefaults()
             updatePrefsFromManagedPrefs()
             if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
                 showWebLogin=true
