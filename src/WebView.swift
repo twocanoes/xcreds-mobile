@@ -13,6 +13,8 @@ import SwiftUI
 
 
 class WebView:WKWebView, TokenManagerFeedbackDelegate {
+    var authToken:String?
+    var eventURL: String?
     func invalidCredentials() {
         
     }
@@ -35,7 +37,13 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
 
     func showLoginSuccessful(){
         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
-            URLSession.shared.postLoginMessage()
+            if let token = UserDefaults.standard.string(forKey: PrefKeys.webHookAuthToken.rawValue),
+               let urlString = UserDefaults.standard.string(forKey: PrefKeys.webHookURLString.rawValue),
+               let webHookURL = URL(string: urlString) {
+                URLSession.shared.postWebHook(url: webHookURL, token: token, payload: [
+                    "event": "login"
+                ])
+            }
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
                 exit(0);
             }
@@ -62,7 +70,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
             credWithPass.username = idTokenObject.email
         }
         let encoder = PropertyListEncoder()
-        
+        // TODO: Get username here
         guard let data = try? encoder.encode(credWithPass) else {
             return
         }

@@ -31,6 +31,8 @@ struct ContentView: View {
     @State private var wifiNetworks:[WifiNetwork] = []
     
     @State private var wifiSelection:WifiNetwork?
+    @AppStorage(PrefKeys.webHookAuthToken.rawValue) var webHookAuthToken: String?
+    @AppStorage(PrefKeys.webHookURLString.rawValue) var webHookURLString: String?
 
 
     let currentDate = Date()
@@ -104,10 +106,8 @@ struct ContentView: View {
                         loggedIn=true
                         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                             samActive=false
-                            URLSession.shared.postLoginMessage()
+                            postWebhookMessage(["event": "login"], )
                         })
-                        
-
                     }
                 
                 
@@ -133,7 +133,13 @@ struct ContentView: View {
         }
         return fullVersionString
     }
-
+    func postWebhookMessage(_ message: [String: String]) {
+        if let token = webHookAuthToken,
+           let urlString = webHookURLString,
+           let webHookURL = URL(string: urlString) {
+            URLSession.shared.postWebHook(url: webHookURL, token: token, payload: message)
+        }
+    }
     var body: some View {
 
         VStack {
@@ -328,7 +334,7 @@ struct ContentView: View {
                             LocalNotificationManager.sharedManager.sendNotification(message: "Tap to Lock")
                         }
                         UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                            
+                            postWebhookMessage(["event": "login"])
                         })
                     }
                     samActive=true
@@ -353,7 +359,7 @@ struct ContentView: View {
 //                    }
 //                }
 //            }
-            
+
 
             loadPage=true
             readDefaults()
@@ -378,7 +384,7 @@ struct ContentView: View {
                 UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
                     samActive=true
                     webView.loadPage()
-                    URLSession.shared.postLogoutMessage()
+                    postWebhookMessage(["event": "logout"])
                 })
                 loadPage=true
             } else {

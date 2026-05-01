@@ -27,38 +27,20 @@ extension URLSession {
         return data
     }
     // TODO: both functions below need to post serial number and user id
-    func postLoginMessage() {
-        let message: [String: String] = [
-            "event": "login"
-        ]
-        let auth = "Splunk CF179AE4-3C99-45F5-A7CC-3284AA91CF67"
-        let url = URL(string: "http://192.168.1.86:8000")!
+    // https://developer.apple.com/forums/thread/723418
+    func postWebHook(url: URL, token: String, payload: [String: String]) {
         Task {
             do {
-                let data = try JSONEncoder().encode(message)
-                let responseData = try await URLSession.shared.postRequest(to: url, data: data, authorization: auth)
-                TCSLogWithMark("Received webhook response: \(String(data: responseData, encoding: .utf8) ?? "No data")")
+                let data = try JSONEncoder().encode(payload)
+                let responseData = try await URLSession.shared.postRequest(to: url, data: data, authorization: token)
+                guard !responseData.isEmpty,
+                    let responseString = String(data: responseData, encoding: .utf8)
+                else { return }
+                TCSLogWithMark("Received webhook response: \(responseString)")
             } catch {
                 TCSLogWithMark("Error posting webhook: \(error)")
             }
         }
     }
-    func postLogoutMessage() {
-        let message: [String: String] = [
-            "event": "logout"
-        ]
-        let auth = "Splunk CF179AE4-3C99-45F5-A7CC-3284AA91CF67"
-        let url = URL(string: "http://192.168.1.86:8000")!
-        Task {
-            do {
-                let data = try JSONEncoder().encode(message)
-                let responseData = try await URLSession.shared.postRequest(to: url, data: data, authorization: auth)
-                TCSLogWithMark("Received webhook response: \(String(data: responseData, encoding: .utf8) ?? "No data")")
-            } catch {
-                TCSLogWithMark("Error posting webhook: \(error)")
-            }
-        }
-    }
-
 }
 
