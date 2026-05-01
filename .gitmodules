@@ -1,3 +1,6 @@
 [submodule "tcsopensourcetools"]
 	path = tcsopensourcetools
 	url = git@bitbucket.org:twocanoes/tcsopensourcetools.git
+[submodule "ProfileManifests"]
+	path = ProfileManifests
+	url = git@github.com:twocanoes/ProfileManifests.git

@@ -99,6 +99,7 @@
 		76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "xcreds-mobile-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		76F8343A2FA5568400C4D5F1 /* com.twocanoes.xcreds.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = com.twocanoes.xcreds.plist; path = ProfileManifests/Manifests/ManagedPreferencesApplications/com.twocanoes.xcreds.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -247,6 +248,7 @@
 		76B6A6512F25542B0079229D = {
 			isa = PBXGroup;
 			children = (
+				76F8343A2FA5568400C4D5F1 /* com.twocanoes.xcreds.plist */,
 				76532F422F68E13600433814 /* XCreds Mobile.entitlements */,
 				76113D432F25BA8F002F8FD1 /* src */,
 				76B8073E2F6A38BC00ECD82A /* xcreds-mobile-widget */,
