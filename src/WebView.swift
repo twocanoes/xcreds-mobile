@@ -37,21 +37,31 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     
     
 
+    func showLoginSuccessful(){
+        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
+        
+            if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
+               let html = try? String(contentsOf: filePath, encoding: .utf8){
+                
+                self.loadHTMLString(html, baseURL: nil)
+            }
+            
+        })
+    }
     func credentialsUpdated(_ credentials: Creds) {
         TCSLogWithMark()
-        var credWithPass = credentials
-        credWithPass.password = self.password
-                                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in })
-
-        var tokenInfo = "<tr><th>OIDC Claim</th><th>Value</th></tr>"
+//        var credWithPass = credentials
+//        credWithPass.password = self.password
         
-        if let tokenInfoFromCreds = try? TokenManager().tokenInfo(fromCredentials: credentials){
-            for (k,v) in tokenInfoFromCreds {
-                if let v = v as? String {
-                    tokenInfo += ("<tr><td style=\"text-align: right;\">\(k)</td><td style=\"text-align: left;\">\(v)</td></tr>")
-                }
-            }
-        }
+//        var tokenInfo = "<tr><th>OIDC Claim</th><th>Value</th></tr>"
+        
+//        if let tokenInfoFromCreds = try? TokenManager().tokenInfo(fromCredentials: credentials){
+//            for (k,v) in tokenInfoFromCreds {
+//                if let v = v as? String {
+//                    tokenInfo += ("<tr><td style=\"text-align: right;\">\(k)</td><td style=\"text-align: left;\">\(v)</td></tr>")
+//                }
+//            }
+//        }
         
         //                let url = try await self.getOidcLoginURL()
 //                        let url = URL(string:Bundle.main.path(forResource: "index", ofType: "html")!)!
@@ -65,11 +75,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
 //        }
 
 
-        
-        let html = "<!DOCTYPE html><html><head><style>.center-screen { display: flex;flex-direction: column;justify-content: center;align-items: center;text-align: center;min-height: 100vh;}</style></head><body><div class=\"center-screen\"> <h1>Signed In</h1><p>You are now signed in!</p><h2>Claims</h2><table>\(tokenInfo)</table></div></body></html>"
-//
-        self.loadHTMLString(html, baseURL: nil)
-        
+        showLoginSuccessful()
 //        NotificationCenter.default.post(name: Notification.Name("TCSTokensUpdated"), object: self, userInfo:["credentials":credWithPass]
 //                       )
 

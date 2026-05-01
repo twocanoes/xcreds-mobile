@@ -32,16 +32,15 @@ struct ContentView: View {
     @State private var wifiSelection:WifiNetwork?
 
     var longPress: some Gesture {
-        LongPressGesture(minimumDuration: 6)
+        LongPressGesture(minimumDuration: 3)
 
             .onEnded { finished in
             
                 if UserDefaults.standard.bool(forKey: PrefKeys.shouldAllowExitSAM.rawValue) == false {
                     return
                 }
-                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-                    samActive=false
-                })
+                webView.showLoginSuccessful()
+
 
             }
     }
@@ -338,18 +337,25 @@ struct ContentView: View {
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 print("Active")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { // Change `2.0` to the desired number of seconds.
-                    UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                        samActive=true
-                        
-                    })
-                }
+                //                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { // Change `2.0` to the desired number of seconds.
+                UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
+                    samActive=true
+                    webView.loadPage()
+
+                    
+                })
+                //                }
                 loadPage=true
-            } else if newPhase == .inactive {
-                print("Inactive")
-            } else if newPhase == .background {
-                print("Background")
+            } else {
+                webView.loadPage()
             }
+//            } else if newPhase == .inactive {
+//                print("Inactive")
+//            }
+//            
+//            else if newPhase == .background {
+//                print("Background")
+//            }
         }
         
     }
