@@ -13,6 +13,7 @@ import WebKit
 struct ContentView: View {
     @State var optionsSheetIsPresented = false
     
+    @State var timer:Timer?
     @State var webView = WebView()
     @State var username:String=""
     @State var password:String=""
@@ -31,6 +32,7 @@ struct ContentView: View {
     
     @State private var wifiSelection:WifiNetwork?
 
+    
     var longPress: some Gesture {
         LongPressGesture(minimumDuration: 3)
 
@@ -358,6 +360,15 @@ struct ContentView: View {
                 loadPage=true
             } else {
                 webView.loadPage()
+//                timer?.invalidate()
+//                timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
+//                    Task { @MainActor in
+//                        UIAccessibility.requestGuidedAccessSession(enabled: true) { success in
+//                                print("Requested Single App Mode: \(success)")
+//                            }
+//                    }
+//                }
+
             }
 //            } else if newPhase == .inactive {
 //                print("Inactive")

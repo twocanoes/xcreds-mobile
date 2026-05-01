@@ -11,6 +11,8 @@
 		7650D4532F57D970009B6C16 /* Helper+URLDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B003382F491A9E00C4B98C /* Helper+URLDecode.swift */; };
 		7650D4542F57D979009B6C16 /* Helper+JWTDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B003372F491A9E00C4B98C /* Helper+JWTDecode.swift */; };
 		7650D4A52F57E6EE009B6C16 /* ManagedPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7650D4A42F57E6EE009B6C16 /* ManagedPrefs.swift */; };
+		7664F84E2FA44F33008ADAFE /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7664F84D2FA44F33008ADAFE /* AuthenticationServices.framework */; };
+		7664F8592FA44F33008ADAFE /* XCreds Password.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7664F84C2FA44F33008ADAFE /* XCreds Password.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		76B0035B2F491ABC00C4B98C /* OSLoggingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B0034A2F491A9E00C4B98C /* OSLoggingHelper.swift */; };
 		76B8073B2F6A38BC00ECD82A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */; };
 		76B8073D2F6A38BC00ECD82A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */; };
@@ -19,6 +21,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7664F8572FA44F33008ADAFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 76B6A6522F25542B0079229D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7664F84B2FA44F33008ADAFE;
+			remoteInfo = "XCreds Password";
+		};
 		76B8074C2F6A38BD00ECD82A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 76B6A6522F25542B0079229D /* Project object */;
@@ -36,6 +45,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				76B8074E2F6A38BD00ECD82A /* xcreds-mobile-widgetExtension.appex in Embed Foundation Extensions */,
+				7664F8592FA44F33008ADAFE /* XCreds Password.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -46,6 +56,8 @@
 		76113D422F25BA8F002F8FD1 /* XCreds Mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "XCreds Mobile.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7650D4A42F57E6EE009B6C16 /* ManagedPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedPrefs.swift; sourceTree = "<group>"; };
 		76532F422F68E13600433814 /* XCreds Mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "XCreds Mobile.entitlements"; sourceTree = "<group>"; };
+		7664F84C2FA44F33008ADAFE /* XCreds Password.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "XCreds Password.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7664F84D2FA44F33008ADAFE /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		76B003342F491A9E00C4B98C /* CCIDCardReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCIDCardReader.swift; sourceTree = "<group>"; };
 		76B003352F491A9E00C4B98C /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
 		76B003362F491A9E00C4B98C /* FDESetupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FDESetupHelper.swift; sourceTree = "<group>"; };
@@ -96,6 +108,27 @@
 			);
 			target = 76113D412F25BA8F002F8FD1 /* XCreds Mobile */;
 		};
+		7664F85D2FA44F33008ADAFE /* Exceptions for "XCreds Password" folder in "XCreds Password" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7664F84B2FA44F33008ADAFE /* XCreds Password */;
+		};
+		7664F8632FA454B7008ADAFE /* Exceptions for "XCreds Password" folder in "XCreds Mobile" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				KeychainUtil.swift,
+			);
+			target = 76113D412F25BA8F002F8FD1 /* XCreds Mobile */;
+		};
+		7664F86E2FA4F2B0008ADAFE /* Exceptions for "src" folder in "XCreds Password" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Tokens.swift,
+			);
+			target = 7664F84B2FA44F33008ADAFE /* XCreds Password */;
+		};
 		76B807532F6A38BD00ECD82A /* Exceptions for "xcreds-mobile-widget" folder in "xcreds-mobile-widgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -110,8 +143,18 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				7605C3E62F269491009233BC /* Exceptions for "src" folder in "XCreds Mobile" target */,
+				7664F86E2FA4F2B0008ADAFE /* Exceptions for "src" folder in "XCreds Password" target */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		7664F84F2FA44F33008ADAFE /* XCreds Password */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7664F8632FA454B7008ADAFE /* Exceptions for "XCreds Password" folder in "XCreds Mobile" target */,
+				7664F85D2FA44F33008ADAFE /* Exceptions for "XCreds Password" folder in "XCreds Password" target */,
+			);
+			path = "XCreds Password";
 			sourceTree = "<group>";
 		};
 		76B8073E2F6A38BC00ECD82A /* xcreds-mobile-widget */ = {
@@ -130,6 +173,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7605C3D32F268408009233BC /* OIDCLite in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7664F8492FA44F33008ADAFE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7664F84E2FA44F33008ADAFE /* AuthenticationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +248,7 @@
 				76532F422F68E13600433814 /* XCreds Mobile.entitlements */,
 				76113D432F25BA8F002F8FD1 /* src */,
 				76B8073E2F6A38BC00ECD82A /* xcreds-mobile-widget */,
+				7664F84F2FA44F33008ADAFE /* XCreds Password */,
 				76B807392F6A38BC00ECD82A /* Frameworks */,
 				76B6A65B2F25542B0079229D /* Products */,
 				76B003592F491A9E00C4B98C /* tools */,
@@ -208,6 +260,7 @@
 			children = (
 				76113D422F25BA8F002F8FD1 /* XCreds Mobile.app */,
 				76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */,
+				7664F84C2FA44F33008ADAFE /* XCreds Password.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -217,6 +270,7 @@
 			children = (
 				76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */,
 				76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */,
+				7664F84D2FA44F33008ADAFE /* AuthenticationServices.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -237,6 +291,7 @@
 			);
 			dependencies = (
 				76B8074D2F6A38BD00ECD82A /* PBXTargetDependency */,
+				7664F8582FA44F33008ADAFE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				76113D432F25BA8F002F8FD1 /* src */,
@@ -248,6 +303,28 @@
 			productName = LoginWindow;
 			productReference = 76113D422F25BA8F002F8FD1 /* XCreds Mobile.app */;
 			productType = "com.apple.product-type.application";
+		};
+		7664F84B2FA44F33008ADAFE /* XCreds Password */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7664F85A2FA44F33008ADAFE /* Build configuration list for PBXNativeTarget "XCreds Password" */;
+			buildPhases = (
+				7664F8482FA44F33008ADAFE /* Sources */,
+				7664F8492FA44F33008ADAFE /* Frameworks */,
+				7664F84A2FA44F33008ADAFE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7664F84F2FA44F33008ADAFE /* XCreds Password */,
+			);
+			name = "XCreds Password";
+			packageProductDependencies = (
+			);
+			productName = "XCreds Password";
+			productReference = 7664F84C2FA44F33008ADAFE /* XCreds Password.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		76B807372F6A38BC00ECD82A /* xcreds-mobile-widgetExtension */ = {
 			isa = PBXNativeTarget;
@@ -285,6 +362,9 @@
 						CreatedOnToolsVersion = 26.2;
 						LastSwiftMigration = 2620;
 					};
+					7664F84B2FA44F33008ADAFE = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					76B807372F6A38BC00ECD82A = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -309,12 +389,20 @@
 			targets = (
 				76113D412F25BA8F002F8FD1 /* XCreds Mobile */,
 				76B807372F6A38BC00ECD82A /* xcreds-mobile-widgetExtension */,
+				7664F84B2FA44F33008ADAFE /* XCreds Password */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		76113D402F25BA8F002F8FD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7664F84A2FA44F33008ADAFE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -343,6 +431,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7664F8482FA44F33008ADAFE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		76B807342F6A38BC00ECD82A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -353,6 +448,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7664F8582FA44F33008ADAFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7664F84B2FA44F33008ADAFE /* XCreds Password */;
+			targetProxy = 7664F8572FA44F33008ADAFE /* PBXContainerItemProxy */;
+		};
 		76B8074D2F6A38BD00ECD82A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 76B807372F6A38BC00ECD82A /* xcreds-mobile-widgetExtension */;
@@ -463,6 +563,69 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		7664F85B2FA44F33008ADAFE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "XCreds Password/XCreds_Password.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UXP6YEHSPW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "XCreds Password/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "XCreds Password";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile.XCreds-Password";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7664F85C2FA44F33008ADAFE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "XCreds Password/XCreds_Password.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UXP6YEHSPW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "XCreds Password/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "XCreds Password";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile.XCreds-Password";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -659,6 +822,15 @@
 			buildConfigurations = (
 				76113D4A2F25BA90002F8FD1 /* Debug */,
 				76113D4B2F25BA90002F8FD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7664F85A2FA44F33008ADAFE /* Build configuration list for PBXNativeTarget "XCreds Password" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7664F85B2FA44F33008ADAFE /* Debug */,
+				7664F85C2FA44F33008ADAFE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,12 +7,12 @@
 
 import Foundation
 import OIDCLite
-struct Creds {
+struct Creds:Codable{
+    var username:String? = ""
     var password:String? = ""
     public var accessToken: String?
     public var idToken: String?
     public var refreshToken: String?
-    public var jsonDict: [String:Any]?
 
     init(password:String?, tokens:OIDCLite.TokenResponse) {
 
@@ -20,7 +20,6 @@ struct Creds {
         self.idToken=tokens.idToken
         self.refreshToken=tokens.refreshToken
         self.password=password
-        self.jsonDict=tokens.jsonDict
 
    }
     init(accessToken:String?, idToken:String?,refreshToken:String?, password:String?,jsonDict:Dictionary <String,Any>) {
@@ -29,7 +28,6 @@ struct Creds {
         self.idToken=idToken
         self.refreshToken=refreshToken
         self.password=password
-        self.jsonDict=jsonDict
    }
     func hasTokens() -> Bool {
 

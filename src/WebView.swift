@@ -58,31 +58,21 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     }
     func credentialsUpdated(_ credentials: Creds) {
         TCSLogWithMark()
-//        var credWithPass = credentials
-//        credWithPass.password = self.password
+        var credWithPass = credentials
+        credWithPass.password = self.password
         
-//        var tokenInfo = "<tr><th>OIDC Claim</th><th>Value</th></tr>"
-        
-//        if let tokenInfoFromCreds = try? TokenManager().tokenInfo(fromCredentials: credentials){
-//            for (k,v) in tokenInfoFromCreds {
-//                if let v = v as? String {
-//                    tokenInfo += ("<tr><td style=\"text-align: right;\">\(k)</td><td style=\"text-align: left;\">\(v)</td></tr>")
-//                }
-//            }
-//        }
-        
-        //                let url = try await self.getOidcLoginURL()
-//                        let url = URL(string:Bundle.main.path(forResource: "index", ofType: "html")!)!
-//                        TCSLogWithMark("URL: \(url)");
-//                        
-//        if let fileURL = Bundle.main.url(forResource: "index", withExtension: "html") {
-//            
-//            if let fileContents = try? String(contentsOf: fileURL) {
-//                self.loadHTMLString(fileContents, baseURL: Bundle.main.resourceURL)
-//            }
-//        }
+        if  let idTokenInfo = try? tokenManager.tokenInfo(fromCredentials: credentials), let idTokenObject = idTokenInfo["idToken"] as? IDToken {
 
+            credWithPass.username = idTokenObject.email
+        }
+        let encoder = PropertyListEncoder()
+        
+        guard let data = try? encoder.encode(credWithPass) else {
+            return
+        }
 
+        try? KeychainUtil().storeDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", data:data , group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
+ 
         showLoginSuccessful()
 //        NotificationCenter.default.post(name: Notification.Name("TCSTokensUpdated"), object: self, userInfo:["credentials":credWithPass]
 //                       )
