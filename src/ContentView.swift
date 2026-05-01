@@ -59,7 +59,10 @@ struct ContentView: View {
         formatter.dateFormat = "hh:mm"
         return formatter
     }()
-    
+    /*
+     if let imagePathURL = DefaultsOverride.standardOverride.string(forKey: PrefKeys.loginWindowBackgroundImageURL.rawValue), let image = NSImage.imageFromPathOrURL(pathURLString: imagePathURL){
+
+     */
     fileprivate func LocalLoginView() -> ZStack<TupleView<(some View, some View)>> {
         return ZStack{
             Image("DefaultAerial")
@@ -148,21 +151,26 @@ struct ContentView: View {
         VStack {
             if loggedIn == false {
                 ZStack{
-                    Image("DefaultAerial")
-                        .resizable(resizingMode: .stretch)
-                        .ignoresSafeArea()
+                    if let imageURLString = UserDefaults.standard.value(forKey: PrefKeys.loginWindowBackgroundImageURL.rawValue) as? String,
+                       let imageURL = URL(string: imageURLString){
+                        AsyncImage(url: imageURL) { image in
+                            image
+                                .resizable(resizingMode: .stretch)
+                                .ignoresSafeArea()
+                        } placeholder: {}
                         
-                        .background(.red)
-
-//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+                    }
                     if showWebLogin == true {
+                        let width = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowWidth.rawValue))
+                        let height = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowHeight.rawValue))
+
                         LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC )
                             .refreshable{
                                 webView.loadPage()
 
                             }
-                            .frame(width: 400,height: 400)
+                            .frame(width: width > 150 ? width: nil,height: height > 150 ? height: nil)
+                            .ignoresSafeArea()
                             
                     
                     }
@@ -174,30 +182,32 @@ struct ContentView: View {
                         Spacer()
                         
                         HStack {
-                            Button("System Info") {
-                                showingPopover = true
+                            if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSystemInfoButton.rawValue)==true{
                                 
+                                Button("System Info") {
+                                    showingPopover = true
+                                    
+                                    
+                                }
                                 
-                            }
-
-                            .buttonStyle(.borderedProminent)
-                            
-                            .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
+                                .buttonStyle(.borderedProminent)
                                 
-                                VStack(alignment: .leading){
-                                    Text("Name: \(UIDevice.current.name)")
-                                    Text("System Version: \(UIDevice.current.systemVersion)")
-                                    Text("System Name: \(UIDevice.current.systemName)")
-                                    Text("Model: \(UIDevice.current.model)")
-                                    if let version = versionString() {
-                                        Text("XCreds: \(version)")
+                                .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
+                                    
+                                    VStack(alignment: .leading){
+                                        Text("Name: \(UIDevice.current.name)")
+                                        Text("System Version: \(UIDevice.current.systemVersion)")
+                                        Text("System Name: \(UIDevice.current.systemName)")
+                                        Text("Model: \(UIDevice.current.model)")
+                                        if let version = versionString() {
+                                            Text("XCreds: \(version)")
+                                        }
                                     }
+                                    .padding()
+                                    
                                 }
                                 .padding()
-                                
                             }
-                            .padding()
-                            
                             
                             Spacer()
 //                            Button(action:{

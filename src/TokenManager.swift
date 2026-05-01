@@ -306,178 +306,178 @@ class TokenManager {
 //        }
 //        return .createNewAccount
 //    }
-    func setupUserAccountInfo(idTokenInfo:Dictionary<String, Any>)  -> CalculateUserAccountInfoResult {
-
-        TCSLogWithMark()
-        var userAccountInfo = UserAccountInfo()
-        guard let idTokenObject = idTokenInfo["idToken"] as? IDToken else {
-            return .error("invalid token object")
-
-        }
-        let defaultsUsername = UserDefaults.standard.string(forKey: PrefKeys.username.rawValue)
-
-        // username static map
-        if let defaultsUsername = defaultsUsername, defaultsUsername.count>0 {
-            userAccountInfo.username = defaultsUsername
-        }
-        else if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapUserName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String, let leftSide = mapValue.components(separatedBy: "@").first, leftSide.count>0{
-
-            TCSLogWithMark()
-            userAccountInfo.username = leftSide.replacingOccurrences(of: " ", with: "_").stripped
-            TCSLogWithMark("mapped username found: \(mapValue) clean version:\(userAccountInfo.username ?? "nil")")
-        }
-        else {
-            TCSLogWithMark()
-            var emailString:String
-
-            if let email = idTokenObject.email, email.count>0  {
-                emailString=email.lowercased()
-            }
-            else if let uniqueName=idTokenObject.unique_name, uniqueName.count>0 {
-                emailString=uniqueName
-            }
-
-            else {
-                TCSLogWithMark("no username found. Using sub.")
-                emailString=idTokenObject.sub
-            }
-            guard let tUsername = emailString.components(separatedBy: "@").first?.lowercased() else {
-                TCSLogErrorWithMark("email address invalid")
-
-                return .error("The email address from the identity token is invalid")
-
-            }
-            TCSLogWithMark("username found: \(tUsername)")
-            userAccountInfo.username = tUsername
-        }
-
-        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFullUserName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
-            TCSLogWithMark("setting fullUsername to \(mapValue)")
-            userAccountInfo.fullUsername = mapValue
-            
-        }
-
-        else if let email = idTokenObject.email {
-            TCSLogWithMark()
-            userAccountInfo.fullUsername = email.lowercased()
-
-        }
-        else if let mapValue = idTokenInfo["upn"] as? String {
-            TCSLogWithMark()
-            userAccountInfo.fullUsername = mapValue
-
-        }
-
-            
-
-        //kerberos principal name
-
-        //mapKerberosPrincipalName
-
-        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapKerberosPrincipalName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
-            //we have a mapping so use that.
-            TCSLogWithMark("mapKerberosPrincipalName name mapped to: \(mapKey)")
-            userAccountInfo.kerberosPrincipalName = mapValue
-        }
-
-        if UserDefaults.standard.bool(forKey: PrefKeys.shouldUpdateKerberosUserPrincipalADDomain.rawValue) == true,
-           let adDomain = UserDefaults.standard.string(forKey: PrefKeys.aDDomain.rawValue) {
-
-            if userAccountInfo.kerberosPrincipalName?.uppercased().hasSuffix(adDomain.uppercased())==false{
-                TCSLogWithMark("kerberosPrincipalName name does not end with \(adDomain). Updating...")
-
-                let principalNameWithoutDomain = userAccountInfo.kerberosPrincipalName?.split(separator: "@").first ?? ""
-                userAccountInfo.kerberosPrincipalName = principalNameWithoutDomain + "@" + adDomain
-
-                TCSLogWithMark("kerberosPrincipalName name is now \(userAccountInfo.kerberosPrincipalName ?? "")")
-
-            }   
-        }
-
-        //full name
-        TCSLogWithMark("checking map_fullname")
-
-        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFullName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
-            //we have a mapping so use that.
-            TCSLogWithMark("full name mapped to: \(mapKey)")
-            userAccountInfo.fullName = mapValue
-
-        }
-
-        else if let firstName = idTokenObject.given_name, let lastName = idTokenObject.family_name {
-            TCSLogWithMark("firstName: \(firstName)")
-            TCSLogWithMark("lastName: \(lastName)")
-            userAccountInfo.fullName = "\(firstName) \(lastName)"
-
-        }
-
-
-        //first name
-        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFirstName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
-            //we have a mapping for username, so use that.
-            TCSLogWithMark("first name mapped to: \(mapKey)")
-            userAccountInfo.firstName = mapValue
-        }
-
-        else if let given_name = idTokenObject.given_name {
-            TCSLogWithMark("firstName from token: \(given_name)")
-            userAccountInfo.firstName = given_name
-
-        }
-        //last name
-        TCSLogWithMark("checking map_lastname")
-
-        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapLastName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
-            //we have a mapping for lastName, so use that.
-            TCSLogWithMark("last name mapped to: \(mapKey)")
-            userAccountInfo.lastName = mapValue
-        }
-
-        else if let familyName = idTokenObject.family_name {
-            TCSLogWithMark("lastName from token: \(familyName)")
-            userAccountInfo.lastName = familyName
-
-        }
-        //groups
-        if let mapValue = idTokenInfo["groups"] as? Array<String> {
-            TCSLogWithMark("setting groups: \(mapValue)")
-            userAccountInfo.groups = mapValue
-        }
-        else {
-
-            TCSLogWithMark("No groups found")
-        }
-
-        let aliasClaim = UserDefaults.standard.string(forKey: PrefKeys.aliasName.rawValue)
-        if let aliasClaim = aliasClaim, let aliasClaimValue = idTokenInfo[aliasClaim] as? String {
-            TCSLogWithMark("found alias claim: \(aliasClaim):\(aliasClaimValue)")
-
-            userAccountInfo.alias = aliasClaimValue
-        }
-        else {
-            TCSLogWithMark("no alias claim: \(aliasClaim ?? "none")")
-        }
-
-        //uid
-        let mapUID = UserDefaults.standard.string(forKey: PrefKeys.mapUID.rawValue)
-
-        if let mapUID = mapUID, let uid = idTokenInfo[mapUID] as? String {
-            if let mapValueInt = Int(uid), mapValueInt > 499 {
-                TCSLogWithMark("setting uid: \(uid)")
-                userAccountInfo.uid = uid
-            }
-            else {
-                TCSLogWithMark("invalid uid mapping value")
-            }
-
-        }
-        else {
-            TCSLogWithMark("No uid mapping")
-        }
-
-        return .success(userAccountInfo)
-
-    }
+////    func setupUserAccountInfo(idTokenInfo:Dictionary<String, Any>)  -> CalculateUserAccountInfoResult {
+////
+////        TCSLogWithMark()
+////        var userAccountInfo = UserAccountInfo()
+////        guard let idTokenObject = idTokenInfo["idToken"] as? IDToken else {
+////            return .error("invalid token object")
+////
+////        }
+////        let defaultsUsername = UserDefaults.standard.string(forKey: PrefKeys.username.rawValue)
+////
+////        // username static map
+////        if let defaultsUsername = defaultsUsername, defaultsUsername.count>0 {
+////            userAccountInfo.username = defaultsUsername
+////        }
+////        else if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapUserName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String, let leftSide = mapValue.components(separatedBy: "@").first, leftSide.count>0{
+////
+////            TCSLogWithMark()
+////            userAccountInfo.username = leftSide.replacingOccurrences(of: " ", with: "_").stripped
+////            TCSLogWithMark("mapped username found: \(mapValue) clean version:\(userAccountInfo.username ?? "nil")")
+////        }
+////        else {
+////            TCSLogWithMark()
+////            var emailString:String
+////
+////            if let email = idTokenObject.email, email.count>0  {
+////                emailString=email.lowercased()
+////            }
+////            else if let uniqueName=idTokenObject.unique_name, uniqueName.count>0 {
+////                emailString=uniqueName
+////            }
+////
+////            else {
+////                TCSLogWithMark("no username found. Using sub.")
+////                emailString=idTokenObject.sub
+////            }
+////            guard let tUsername = emailString.components(separatedBy: "@").first?.lowercased() else {
+////                TCSLogErrorWithMark("email address invalid")
+////
+////                return .error("The email address from the identity token is invalid")
+////
+////            }
+////            TCSLogWithMark("username found: \(tUsername)")
+////            userAccountInfo.username = tUsername
+////        }
+////
+////        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFullUserName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+////            TCSLogWithMark("setting fullUsername to \(mapValue)")
+////            userAccountInfo.fullUsername = mapValue
+////            
+////        }
+////
+////        else if let email = idTokenObject.email {
+////            TCSLogWithMark()
+////            userAccountInfo.fullUsername = email.lowercased()
+////
+////        }
+////        else if let mapValue = idTokenInfo["upn"] as? String {
+////            TCSLogWithMark()
+////            userAccountInfo.fullUsername = mapValue
+////
+////        }
+////
+////            
+////
+////        //kerberos principal name
+////
+////        //mapKerberosPrincipalName
+////
+////        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapKerberosPrincipalName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+////            //we have a mapping so use that.
+////            TCSLogWithMark("mapKerberosPrincipalName name mapped to: \(mapKey)")
+////            userAccountInfo.kerberosPrincipalName = mapValue
+////        }
+////
+////        if UserDefaults.standard.bool(forKey: PrefKeys.shouldUpdateKerberosUserPrincipalADDomain.rawValue) == true,
+////           let adDomain = UserDefaults.standard.string(forKey: PrefKeys.aDDomain.rawValue) {
+////
+////            if userAccountInfo.kerberosPrincipalName?.uppercased().hasSuffix(adDomain.uppercased())==false{
+////                TCSLogWithMark("kerberosPrincipalName name does not end with \(adDomain). Updating...")
+////
+////                let principalNameWithoutDomain = userAccountInfo.kerberosPrincipalName?.split(separator: "@").first ?? ""
+////                userAccountInfo.kerberosPrincipalName = principalNameWithoutDomain + "@" + adDomain
+////
+////                TCSLogWithMark("kerberosPrincipalName name is now \(userAccountInfo.kerberosPrincipalName ?? "")")
+////
+////            }   
+////        }
+//
+//        //full name
+//        TCSLogWithMark("checking map_fullname")
+//
+//        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFullName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+//            //we have a mapping so use that.
+//            TCSLogWithMark("full name mapped to: \(mapKey)")
+//            userAccountInfo.fullName = mapValue
+//
+//        }
+//
+//        else if let firstName = idTokenObject.given_name, let lastName = idTokenObject.family_name {
+//            TCSLogWithMark("firstName: \(firstName)")
+//            TCSLogWithMark("lastName: \(lastName)")
+//            userAccountInfo.fullName = "\(firstName) \(lastName)"
+//
+//        }
+//
+//
+//        //first name
+//        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapFirstName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+//            //we have a mapping for username, so use that.
+//            TCSLogWithMark("first name mapped to: \(mapKey)")
+//            userAccountInfo.firstName = mapValue
+//        }
+//
+//        else if let given_name = idTokenObject.given_name {
+//            TCSLogWithMark("firstName from token: \(given_name)")
+//            userAccountInfo.firstName = given_name
+//
+//        }
+//        //last name
+//        TCSLogWithMark("checking map_lastname")
+//
+//        if let mapKey = UserDefaults.standard.object(forKey: PrefKeys.mapLastName.rawValue)  as? String, mapKey.count>0, let mapValue = idTokenInfo[mapKey] as? String {
+//            //we have a mapping for lastName, so use that.
+//            TCSLogWithMark("last name mapped to: \(mapKey)")
+//            userAccountInfo.lastName = mapValue
+//        }
+//
+//        else if let familyName = idTokenObject.family_name {
+//            TCSLogWithMark("lastName from token: \(familyName)")
+//            userAccountInfo.lastName = familyName
+//
+//        }
+//        //groups
+//        if let mapValue = idTokenInfo["groups"] as? Array<String> {
+//            TCSLogWithMark("setting groups: \(mapValue)")
+//            userAccountInfo.groups = mapValue
+//        }
+//        else {
+//
+//            TCSLogWithMark("No groups found")
+//        }
+//
+//        let aliasClaim = UserDefaults.standard.string(forKey: PrefKeys.aliasName.rawValue)
+//        if let aliasClaim = aliasClaim, let aliasClaimValue = idTokenInfo[aliasClaim] as? String {
+//            TCSLogWithMark("found alias claim: \(aliasClaim):\(aliasClaimValue)")
+//
+//            userAccountInfo.alias = aliasClaimValue
+//        }
+//        else {
+//            TCSLogWithMark("no alias claim: \(aliasClaim ?? "none")")
+//        }
+//
+//        //uid
+//        let mapUID = UserDefaults.standard.string(forKey: PrefKeys.mapUID.rawValue)
+//
+//        if let mapUID = mapUID, let uid = idTokenInfo[mapUID] as? String {
+//            if let mapValueInt = Int(uid), mapValueInt > 499 {
+//                TCSLogWithMark("setting uid: \(uid)")
+//                userAccountInfo.uid = uid
+//            }
+//            else {
+//                TCSLogWithMark("invalid uid mapping value")
+//            }
+//
+//        }
+//        else {
+//            TCSLogWithMark("No uid mapping")
+//        }
+//
+//        return .success(userAccountInfo)
+//
+//    }
 
 }
 // MARK: OIDC Lite Delegate Functions
