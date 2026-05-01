@@ -186,8 +186,10 @@ struct ContentView: View {
                         HStack {
                             if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSystemInfoButton.rawValue)==true{
                                 
-                                Button("System Info") {
-                                    showingPopover = true
+                                Button(UserDefaults.standard.string(forKey: PrefKeys.systemInfoButtonTitle.rawValue) ?? "System Info") {
+                                    if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
+                                        showingPopover = true
+                                    }
                                     
                                     
                                 }

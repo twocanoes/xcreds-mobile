@@ -76,7 +76,7 @@ class TokenManager {
     private var oidcLocal:OIDCLite?
     func oidc() async throws -> OIDCLite {
         var scopes: [String]?
-        var additionalParameters:[String:String]? = nil
+        var additionalParameters:[String:String] =  [:]
 
         if let oidcPrivate = oidcLocal {
            try await oidcPrivate.getEndpoints()
@@ -91,10 +91,17 @@ class TokenManager {
         }
         if UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) == true {
 
-            additionalParameters = ["access_type":"offline"]
+            additionalParameters["access_type"]="offline"
         }
+        if let domain=UserDefaults.standard.string(forKey: PrefKeys.googleHostDomain.rawValue), domain.isEmpty==false
+        {
+            additionalParameters["hd"]=domain
+
+        }
+
+
         
-        let oidcLite = OIDCLite(discoveryURL: UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue) ?? "NONE", clientID: clientID ?? "NONE", clientSecret: clientSecret, redirectURI: UserDefaults.standard.string(forKey: PrefKeys.redirectURI.rawValue), scopes: scopes, additionalParameters:additionalParameters, resource: resource)
+        let oidcLite = OIDCLite(discoveryURL: UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue) ?? "NONE", clientID: clientID ?? "NONE", clientSecret: clientSecret, redirectURI: UserDefaults.standard.string(forKey: PrefKeys.redirectURI.rawValue), scopes: scopes, additionalParameters:additionalParameters.count==0 ? nil:additionalParameters, resource: resource)
         try await oidcLite.getEndpoints()
         oidcLocal = oidcLite
         return oidcLite

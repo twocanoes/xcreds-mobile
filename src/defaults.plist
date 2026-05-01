@@ -6,5 +6,9 @@
 	<true/>
 	<key>shouldExitOnSuccessfulAuth</key>
 	<false/>
+	<key>shouldActivateSystemInfoButton</key>
+	<true/>
+	<key>systemInfoButtonTitle</key>
+	<string></string>
 </dict>
 </plist>

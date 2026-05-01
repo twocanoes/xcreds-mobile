@@ -18,6 +18,7 @@
 		76B8073B2F6A38BC00ECD82A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */; };
 		76B8073D2F6A38BC00ECD82A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */; };
 		76B8074E2F6A38BD00ECD82A /* xcreds-mobile-widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		76F8343C2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist in Resources */ = {isa = PBXBuildFile; fileRef = 76F8343B2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist */; };
 		AAFB24612F9FF98200F1C98A /* NSBundle+FindBundlePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B0033F2F491A9E00C4B98C /* NSBundle+FindBundlePath.swift */; };
 /* End PBXBuildFile section */
 
@@ -99,7 +100,7 @@
 		76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "xcreds-mobile-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		76F8343A2FA5568400C4D5F1 /* com.twocanoes.xcreds.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = com.twocanoes.xcreds.plist; path = ProfileManifests/Manifests/ManagedPreferencesApplications/com.twocanoes.xcreds.plist; sourceTree = "<group>"; };
+		76F8343B2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "com.twocanoes.xcreds-mobile.plist"; path = "ProfileManifests/Manifests/ManagedPreferencesApplications/com.twocanoes.xcreds-mobile.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -248,7 +249,7 @@
 		76B6A6512F25542B0079229D = {
 			isa = PBXGroup;
 			children = (
-				76F8343A2FA5568400C4D5F1 /* com.twocanoes.xcreds.plist */,
+				76F8343B2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist */,
 				76532F422F68E13600433814 /* XCreds Mobile.entitlements */,
 				76113D432F25BA8F002F8FD1 /* src */,
 				76B8073E2F6A38BC00ECD82A /* xcreds-mobile-widget */,
@@ -404,6 +405,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76F8343C2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,7 +500,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -551,7 +553,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -588,7 +590,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile.XCreds-Password";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -619,7 +621,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile.XCreds-Password";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -772,7 +774,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile.xcreds-mobile-widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -804,7 +806,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.twocanoes.xcreds-mobile.xcreds-mobile-widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
