@@ -40,10 +40,18 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     func showLoginSuccessful(){
         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
         
-            if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
-               let html = try? String(contentsOf: filePath, encoding: .utf8){
+            if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
+                exit(0);
+            }
+            else if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
+                   let html = try? String(contentsOf: filePath, encoding: .utf8){
+                    
+                    self.loadHTMLString(html, baseURL: nil)
                 
-                self.loadHTMLString(html, baseURL: nil)
+            }
+            else {
+                self.loadPage()
+                
             }
             
         })

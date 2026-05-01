@@ -4,5 +4,7 @@
 <dict>
 	<key>shouldShowSystemInfoButton</key>
 	<true/>
+	<key>shouldExitOnSuccessfulAuth</key>
+	<false/>
 </dict>
 </plist>
