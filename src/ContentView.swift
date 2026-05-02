@@ -32,21 +32,6 @@ struct ContentView: View {
     
     @State private var wifiSelection:WifiNetwork?
 
-    
-    var longPress: some Gesture {
-        LongPressGesture(minimumDuration: 3)
-
-            .onEnded { finished in
-            
-                if UserDefaults.standard.bool(forKey: PrefKeys.shouldAllowExitSAM.rawValue) == false {
-                    return
-                }
-                webView.showLoginSuccessful()
-
-
-            }
-    }
-
 
     let currentDate = Date()
     //"Sat 24 Jan"
@@ -150,6 +135,7 @@ struct ContentView: View {
     }
 
     var body: some View {
+
         VStack {
             if loggedIn == false {
                 ZStack{
@@ -173,8 +159,7 @@ struct ContentView: View {
                             }
                             .frame(width: width > 150 ? width: nil,height: height > 150 ? height: nil)
                             .ignoresSafeArea()
-                            
-                    
+
                     }
                     else {
                         LocalLoginView()
@@ -189,12 +174,12 @@ struct ContentView: View {
                                 Button(UserDefaults.standard.string(forKey: PrefKeys.systemInfoButtonTitle.rawValue) ?? "System Info") {
                                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                                         if success {
-//                                            Logging.sharedLogger.printLog("All set!")
+                                            //                                            Logging.sharedLogger.printLog("All set!")
                                         } else if let error = error {
-//                                            TCSLo(error.localizedDescription)
+                                            //                                            TCSLo(error.localizedDescription)
                                         }
                                     }
-
+                                    
                                     if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
                                         showingPopover = true
                                     }
@@ -222,38 +207,38 @@ struct ContentView: View {
                             }
                             
                             Spacer()
-//                            Button(action:{
-//                                optionsSheetIsPresented=true
-//                            }) {
-//                                Image(systemName: "gear.circle.fill")
-//                                    .resizable() // This allows the image to be resized
-//                                    .frame(width: 25, height: 25) // This sets the size of the image
-//                                
-//                            }
-//                            .controlSize(.extraLarge)
-//                            .frame(maxWidth: .infinity, alignment: .trailing)
-//                            .padding(.trailing, 8)
-//                            .sheet(isPresented: $optionsSheetIsPresented) {
-//                                if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
-//                                    showWebLogin=false
-//                                    showWebLogin=true
-//                                    loadPage=true
-//                                    resetOIDC=true
-//                                    
-//                                }
-//                                else {
-//                                    showWebLogin=false
-//                                }
-                                
-//                            } content: {
-//                                OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
-//                            }
-//                            .buttonStyle(.borderedProminent)
-//                            .keyboardShortcut(",")
-//                            .labelStyle(.iconOnly)
-//                            .padding()
-//                            
-//                            
+                            //                            Button(action:{
+                            //                                optionsSheetIsPresented=true
+                            //                            }) {
+                            //                                Image(systemName: "gear.circle.fill")
+                            //                                    .resizable() // This allows the image to be resized
+                            //                                    .frame(width: 25, height: 25) // This sets the size of the image
+                            //
+                            //                            }
+                            //                            .controlSize(.extraLarge)
+                            //                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            //                            .padding(.trailing, 8)
+                            //                            .sheet(isPresented: $optionsSheetIsPresented) {
+                            //                                if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
+                            //                                    showWebLogin=false
+                            //                                    showWebLogin=true
+                            //                                    loadPage=true
+                            //                                    resetOIDC=true
+                            //
+                            //                                }
+                            //                                else {
+                            //                                    showWebLogin=false
+                            //                                }
+                            
+                            //                            } content: {
+                            //                                OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
+                            //                            }
+                            //                            .buttonStyle(.borderedProminent)
+                            //                            .keyboardShortcut(",")
+                            //                            .labelStyle(.iconOnly)
+                            //                            .padding()
+                            //
+                            //
                             
                             if wifiNetworks.count>0{
                                 Button("wifi"){
@@ -294,21 +279,21 @@ struct ContentView: View {
                                 .padding()
                                 
                             }
-                            
-                            Button("Exit SAM"){
-                                UIApplication.shared.setAlternateIconName("AppIcon-2"){error in
-                                    if let error = error {
-                                        print(error.localizedDescription)
-                                    } else {
-                                        print("Success!")
+                            if UserDefaults.standard.bool(forKey: PrefKeys.shouldAllowExitSAM.rawValue) == true {
+                                
+                                Button("Exit SAM"){
+                                    
+                                    Task{
+                                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                                            samActive=false
+                                            webView.showLoginSuccessful()
+                                            
+                                        })
                                     }
-}
-                                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-                                    samActive=false
-                                })
+                                }
+                                .padding()
+                                .buttonStyle(.borderedProminent)
                             }
-                            .padding()
-                            .buttonStyle(.borderedProminent)
                             Button("Refresh"){
                                 webView.loadPage()
                             }
@@ -318,7 +303,6 @@ struct ContentView: View {
                     }
                     
                 }
-                .gesture(longPress)
 
             }
             else {

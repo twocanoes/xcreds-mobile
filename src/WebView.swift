@@ -17,18 +17,14 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
         
     }
     
-    
-//    var webView:WKWebView = WKWebView(frame: CGRect(x: 0, y: 0, width: 500, height: 500))
     struct WebViewControllerError:Error {
-
         var errorDescription: String
-
+        
     }
     
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         super.init(frame: frame, configuration: configuration)
         tokenManager.feedbackDelegate=self
-//        self.loadPage()
     }
     
     required init?(coder: NSCoder) {
@@ -38,23 +34,24 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     
 
     func showLoginSuccessful(){
-        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
         
+        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
+            
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
                 exit(0);
             }
             else if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
-                   let html = try? String(contentsOf: filePath, encoding: .utf8){
-                    
-                    self.loadHTMLString(html, baseURL: nil)
+                    let html = try? String(contentsOf: filePath, encoding: .utf8){
+                
+                self.loadHTMLString(html, baseURL: nil)
                 
             }
             else {
                 self.loadPage()
-                
             }
             
         })
+        
     }
     func credentialsUpdated(_ credentials: Creds) {
         TCSLogWithMark()
