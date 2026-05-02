@@ -9,6 +9,14 @@
 	<key>shouldActivateSystemInfoButton</key>
 	<true/>
 	<key>systemInfoButtonTitle</key>
-	<string></string>
+	<string>System Info</string>
+	<key>loginWindowWidth</key>
+	<integer>300</integer>
+	<key>loginWindowHeight</key>
+	<integer>300</integer>
+	<key>loginWindowBackgroundImageURL</key>
+	<string>https://twocanoes.com/wp-content/uploads/2022/02/twocanoes-homepage-hero.png</string>
+	<key>notificationReminderTimerSeconds</key>
+	<integer>60</integer>
 </dict>
 </plist>

@@ -12,7 +12,7 @@ import SwiftUI
 struct xcreds_mobile_widgetBundle: WidgetBundle {
     var body: some Widget {
         xcreds_mobile_widget()
-        xcreds_mobile_widgetControl()
-        xcreds_mobile_widgetLiveActivity()
+//        xcreds_mobile_widgetControl()
+//        xcreds_mobile_widgetLiveActivity()
     }
 }

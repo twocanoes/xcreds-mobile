@@ -14,6 +14,7 @@
 		7664F84E2FA44F33008ADAFE /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7664F84D2FA44F33008ADAFE /* AuthenticationServices.framework */; };
 		7664F8592FA44F33008ADAFE /* XCreds Password.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7664F84C2FA44F33008ADAFE /* XCreds Password.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7664F8AB2FA4F44F008ADAFE /* OIDCLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7664F8AA2FA4F44F008ADAFE /* OIDCLite */; };
+		769630672FA65E7A00D20F2F /* ManagedPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7650D4A42F57E6EE009B6C16 /* ManagedPrefs.swift */; };
 		76B0035B2F491ABC00C4B98C /* OSLoggingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B0034A2F491A9E00C4B98C /* OSLoggingHelper.swift */; };
 		76B8073B2F6A38BC00ECD82A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */; };
 		76B8073D2F6A38BC00ECD82A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */; };
@@ -132,6 +133,15 @@
 			);
 			target = 7664F84B2FA44F33008ADAFE /* XCreds Password */;
 		};
+		769630642FA65D1600D20F2F /* Exceptions for "src" folder in "xcreds-mobile-widgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				defaults.plist,
+				PrefKeys.swift,
+			);
+			target = 76B807372F6A38BC00ECD82A /* xcreds-mobile-widgetExtension */;
+		};
 		76B807532F6A38BD00ECD82A /* Exceptions for "xcreds-mobile-widget" folder in "xcreds-mobile-widgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -146,6 +156,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				7605C3E62F269491009233BC /* Exceptions for "src" folder in "XCreds Mobile" target */,
+				769630642FA65D1600D20F2F /* Exceptions for "src" folder in "xcreds-mobile-widgetExtension" target */,
 				7664F86E2FA4F2B0008ADAFE /* Exceptions for "src" folder in "XCreds Password" target */,
 			);
 			path = src;
@@ -449,6 +460,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				769630672FA65E7A00D20F2F /* ManagedPrefs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -496,7 +508,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
@@ -549,7 +561,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
@@ -584,7 +596,7 @@
 				INFOPLIST_FILE = "XCreds Password/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "XCreds Password";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -615,7 +627,7 @@
 				INFOPLIST_FILE = "XCreds Password/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "XCreds Password";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -768,7 +780,7 @@
 				INFOPLIST_FILE = "xcreds-mobile-widget/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "xcreds-mobile-widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -800,7 +812,7 @@
 				INFOPLIST_FILE = "xcreds-mobile-widget/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "xcreds-mobile-widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

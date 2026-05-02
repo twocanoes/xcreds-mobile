@@ -46,9 +46,23 @@ struct xcreds_mobile_widgetEntryView : View {
 
     var body: some View {
         VStack {
+            
+                Text("Lock iPad")
+                .font(.title)
+                .aspectRatio(contentMode: .fit)
 
-            Text("XCreds Mobile. Tap to logout.")
+            
+            Image(systemName: "lock.shield")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+
+                    
+                                    
         }
+        .onAppear(){
+            readDefaults()
+        }
+//        .background(.blue)
     }
 }
 
@@ -66,20 +80,15 @@ struct xcreds_mobile_widget: Widget {
 extension ConfigurationAppIntent {
     fileprivate static var smiley: ConfigurationAppIntent {
         let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "😀"
+//        intent.favoriteEmoji = "😀"
         return intent
     }
     
-    fileprivate static var starEyes: ConfigurationAppIntent {
-        let intent = ConfigurationAppIntent()
-        intent.favoriteEmoji = "🤩"
-        return intent
-    }
 }
 
 #Preview(as: .systemSmall) {
     xcreds_mobile_widget()
 } timeline: {
     SimpleEntry(date: .now, configuration: .smiley)
-    SimpleEntry(date: .now, configuration: .starEyes)
+//    SimpleEntry(date: .now, configuration: .starEyes)
 }

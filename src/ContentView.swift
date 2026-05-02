@@ -187,6 +187,14 @@ struct ContentView: View {
                             if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSystemInfoButton.rawValue)==true{
                                 
                                 Button(UserDefaults.standard.string(forKey: PrefKeys.systemInfoButtonTitle.rawValue) ?? "System Info") {
+                                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                                        if success {
+//                                            Logging.sharedLogger.printLog("All set!")
+                                        } else if let error = error {
+//                                            TCSLo(error.localizedDescription)
+                                        }
+                                    }
+
                                     if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
                                         showingPopover = true
                                     }
@@ -287,20 +295,20 @@ struct ContentView: View {
                                 
                             }
                             
-//                            Button("Exit SAM"){
-//                                UIApplication.shared.setAlternateIconName("AppIcon-2"){error in
-//                                    if let error = error {
-//                                        print(error.localizedDescription)
-//                                    } else {
-//                                        print("Success!")
-//                                    }
-//}
-//                                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-//                                    samActive=false
-//                                })
-//                            }
-//                            .padding()
-//                            .buttonStyle(.borderedProminent)
+                            Button("Exit SAM"){
+                                UIApplication.shared.setAlternateIconName("AppIcon-2"){error in
+                                    if let error = error {
+                                        print(error.localizedDescription)
+                                    } else {
+                                        print("Success!")
+                                    }
+}
+                                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                                    samActive=false
+                                })
+                            }
+                            .padding()
+                            .buttonStyle(.borderedProminent)
                             Button("Refresh"){
                                 webView.loadPage()
                             }
@@ -328,10 +336,40 @@ struct ContentView: View {
 
         }
         .onAppear(){
-            UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                samActive=true
-            })
-            UIApplication.shared.setAlternateIconName(nil)
+            readDefaults()
+            if UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue) > 59 {
+                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+                    Task{
+                        if try await LocalNotificationManager.sharedManager.requestAuthorizationForNotifications() == true {
+                            LocalNotificationManager.sharedManager.sendNotification(message: "Tap to Lock")
+                        }
+                        UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
+                            
+                        })
+                    }
+                    samActive=true
+                        
+                })
+            }
+            else {
+                UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
+                    
+                })
+            }
+//                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+//                    try? await LocalNotificationManager.sharedManager.requestAuthorizationForNotifications()
+//                    
+//                    samActive=false
+//                })
+//                
+//
+//                Task{
+//                    if await LocalNotificationManager.sharedManager.checkCurrentAuthorizationSetting() == .notDetermined {
+//                        
+//                    }
+//                }
+//            }
+            
             
             loadPage=true
             readDefaults()
@@ -363,6 +401,10 @@ struct ContentView: View {
                 loadPage=true
             } else {
                 webView.loadPage()
+                let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
+
+                LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>29 ? notificationTimer:0)
+
 //                timer?.invalidate()
 //                timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
 //                    Task { @MainActor in
