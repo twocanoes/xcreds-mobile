@@ -98,6 +98,8 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
 //
 //    }
     func loadPage() {
+        try? KeychainUtil().removeItemInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
+
         Task{ @MainActor in
             TCSLogWithMark("Clearing cookies")
             self.cleanAllCookies()
