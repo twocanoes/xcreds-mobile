@@ -570,8 +570,9 @@ extension TokenManager {
            !email.isEmpty {
             userInfo["email"] = email
         }
-        if let value = infoDict["key"] as? String {
-            //TODO: Add other interesting fields from infoDict
+        if let serial = UserDefaults.standard.string(forKey: PrefKeys.deviceSerial.rawValue),
+           !serial.isEmpty {
+            userInfo[PrefKeys.deviceSerial.rawValue] = serial
         }
         return userInfo
     }
