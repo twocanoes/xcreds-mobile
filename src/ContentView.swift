@@ -10,6 +10,12 @@ import AuthenticationServices
 internal import System
 import OIDCLite
 import WebKit
+
+enum WebhookEvent: String {
+    case login = "xcreds-mobile.login"
+    case logout = "xcreds-mobile.logout"
+}
+
 struct ContentView: View {
     @State var optionsSheetIsPresented = false
     
@@ -106,7 +112,8 @@ struct ContentView: View {
                         loggedIn=true
                         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                             samActive=false
-                            postWebhookMessage(["event": "login"], )
+                            TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
+                            postWebhookEvent(.login)
                         })
                     }
                 
@@ -133,13 +140,26 @@ struct ContentView: View {
         }
         return fullVersionString
     }
-    func postWebhookMessage(_ message: [String: String]) {
+    func postWebhookEvent(_ event: WebhookEvent) {
+        var payload: [String: String] = [
+            "event": event.rawValue,
+            "time": Date.now.ISO8601Format()
+        ]
+        if let creds = try? Creds.fromKeychain(),
+           let info = try? TokenManager.webhookPayloadFromCredentials(creds) {
+            payload.merge(info) { $1 }
+        }
+        else {
+            TCSLogWithMark("No user info found in keychain. Skipping webhook.")
+            return
+        }
         if let token = webHookAuthToken,
            let urlString = webHookURLString,
            let webHookURL = URL(string: urlString) {
-            URLSession.shared.postWebHook(url: webHookURL, token: token, payload: message)
+            URLSession.shared.postWebHook(url: webHookURL, token: token, payload: payload)
         }
     }
+
     var body: some View {
 
         VStack {
@@ -152,7 +172,7 @@ struct ContentView: View {
                                 .resizable(resizingMode: .stretch)
                                 .ignoresSafeArea()
                         } placeholder: {}
-                        
+
                     }
                     if showWebLogin == true {
                         let width = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowWidth.rawValue))
@@ -173,10 +193,10 @@ struct ContentView: View {
                     VStack{
 
                         Spacer()
-                        
+
                         HStack {
                             if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSystemInfoButton.rawValue)==true{
-                                
+
                                 Button(UserDefaults.standard.string(forKey: PrefKeys.systemInfoButtonTitle.rawValue) ?? "System Info") {
                                     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
                                         if success {
@@ -293,7 +313,6 @@ struct ContentView: View {
                                         UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                                             samActive=false
                                             webView.showLoginSuccessful()
-                                            
                                         })
                                     }
                                 }
@@ -334,7 +353,7 @@ struct ContentView: View {
                             LocalNotificationManager.sharedManager.sendNotification(message: "Tap to Lock")
                         }
                         UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                            postWebhookMessage(["event": "login"])
+                            postWebhookEvent(.login)
                         })
                     }
                     samActive=true
@@ -343,22 +362,25 @@ struct ContentView: View {
             }
             else {
                 UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                    URLSession.shared.postLogoutMessage()
+                    let data = try? KeychainUtil().findDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group: "UXP6YEHSPW.com.twocanoes.xcreds-mobile")
+                    let info = TokenManager()
+                    TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
+                    postWebhookEvent(.login)
                 })
             }
-//                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-//                    try? await LocalNotificationManager.sharedManager.requestAuthorizationForNotifications()
-//                    
-//                    samActive=false
-//                })
-//                
-//
-//                Task{
-//                    if await LocalNotificationManager.sharedManager.checkCurrentAuthorizationSetting() == .notDetermined {
-//                        
-//                    }
-//                }
-//            }
+            //                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+            //                    try? await LocalNotificationManager.sharedManager.requestAuthorizationForNotifications()
+            //
+            //                    samActive=false
+            //                })
+            //
+            //
+            //                Task{
+            //                    if await LocalNotificationManager.sharedManager.checkCurrentAuthorizationSetting() == .notDetermined {
+            //
+            //                    }
+            //                }
+            //            }
 
 
             loadPage=true
@@ -378,39 +400,39 @@ struct ContentView: View {
         }
         
         .onChange(of: scenePhase) { oldPhase, newPhase in
-            if newPhase == .active {
-                print("Active")
-                //                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { // Change `2.0` to the desired number of seconds.
-                UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                    samActive=true
+            switch (oldPhase, newPhase) {
+                case (_, .active):
+                    print("Active")
+                    //                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { // Change `2.0` to the desired number of seconds.
+                    UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
+                        samActive=true
+                        webView.loadPage()
+                        TCSLogDebugWithMark("\(#file):\(#line) - Logout webhook called on scene phase change to active")
+                        TCSLogDebugWithMark("This might be the first session on startup.")
+                        postWebhookEvent(.logout)
+                        try? KeychainUtil().removeItemInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
+                    })
+                    loadPage=true
                     webView.loadPage()
-                    postWebhookMessage(["event": "logout"])
-                })
-                loadPage=true
-            } else {
-                webView.loadPage()
-                let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
+                case (_, .background):
+                    let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
 
-                LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>29 ? notificationTimer:0)
-
-//                timer?.invalidate()
-//                timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { _ in
-//                    Task { @MainActor in
-//                        UIAccessibility.requestGuidedAccessSession(enabled: true) { success in
-//                                print("Requested Single App Mode: \(success)")
-//                            }
-//                    }
-//                }
-
+                    LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>29 ? notificationTimer:0)
+                default:
+                    TCSLogDebugWithMark("Ignoring phase change from \(oldPhase) to \(newPhase)")
             }
-//            } else if newPhase == .inactive {
-//                print("Inactive")
-//            }
-//            
-//            else if newPhase == .background {
-//                print("Background")
-//            }
         }
         
+    }
+}
+
+extension Creds {
+    var token: IDToken? {
+        guard let tokenString = idToken,
+              let data = try? TokenManager().idTokenData(jwtString: tokenString) else { return nil }
+        return try? JSONDecoder().decode(IDToken.self, from: data)
+    }
+    var dictionary: [String: Any]? {
+        return try? TokenManager().tokenInfo(fromCredentials: self)
     }
 }

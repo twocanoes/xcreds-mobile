@@ -7,27 +7,23 @@
 
 import Foundation
 
-enum HTTPClientError: Error {
-    case invalidResponse
-    case badStatusCode(Int)
-}
 extension URLSession {
     func postRequest(to url: URL, data: Data, authorization: String) async throws -> Data {
         var request = URLRequest(url: url)
         request.setValue(authorization, forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         request.httpBody = data
         
         guard case let (data, response as HTTPURLResponse) = try await self.data(for: request) else {
-            throw HTTPClientError.invalidResponse
+            throw XCredsError("Invalid response from server. Could not read HTTP response.")
         }
         guard (200..<299).contains(response.statusCode) else {
-            throw HTTPClientError.badStatusCode(response.statusCode)
+            throw XCredsError("Bad status from server: \(response.statusCode)")
         }
         return data
     }
     // TODO: both functions below need to post serial number and user id
-    // https://developer.apple.com/forums/thread/723418
     func postWebHook(url: URL, token: String, payload: [String: String]) {
         Task {
             do {

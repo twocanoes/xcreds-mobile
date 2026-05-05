@@ -35,21 +35,33 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     
     
 
-    func showLoginSuccessful(){
-        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: {_ in
-            if let token = UserDefaults.standard.string(forKey: PrefKeys.webHookAuthToken.rawValue),
-               let urlString = UserDefaults.standard.string(forKey: PrefKeys.webHookURLString.rawValue),
-               let webHookURL = URL(string: urlString) {
-                URLSession.shared.postWebHook(url: webHookURL, token: token, payload: [
-                    "event": "login"
-                ])
+    func showLoginSuccessful(info: [String: String]? = nil){
+        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { success in
+            if !success {
+                TCSLogErrorWithMark("Did not successfully transition out of guided access session.")
+            }
+            if let info {
+                TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
+                self.postLoginWebhook(info: info)
             }
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
+#if DEBUG
+                TCSLogDebugWithMark("Not calling exit() in DEBUG build")
+                // Faking it here so it stays attached to the debugger
+                if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
+                   let html = try? String(contentsOf: filePath, encoding: .utf8){
+                    self.loadHTMLString(html, baseURL: nil)
+                }
+                else {
+                    self.loadPage()
+                }
+#else
                 exit(0);
+#endif
             }
             else if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
                     let html = try? String(contentsOf: filePath, encoding: .utf8){
-                
+
                 self.loadHTMLString(html, baseURL: nil)
                 
             }
@@ -59,6 +71,29 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
             
         })
         
+    }
+    func postLoginWebhook(info: [String: String]) {
+        guard let token = UserDefaults.standard.string(forKey: PrefKeys.webHookAuthToken.rawValue),
+              let urlString = UserDefaults.standard.string(forKey: PrefKeys.webHookURLString.rawValue),
+              let webHookURL = URL(string: urlString) else {
+            return
+        }
+
+        var payload: [String: String] = [
+            "event": WebhookEvent.login.rawValue,
+            "time": Date.now.ISO8601Format()
+        ]
+        #if DEBUG
+        payload["debug"] = "\(#file):\(#line) - \(#function)"
+        #endif
+
+        payload.merge(info) { $1 }
+        URLSession.shared.postWebHook(url: webHookURL, token: token, payload: payload)
+    }
+    func postLoginWebhook(credentials: Creds) {
+        if let info = try? TokenManager.webhookPayloadFromCredentials(credentials) {
+            postLoginWebhook(info: info)
+        }
     }
     func credentialsUpdated(_ credentials: Creds) {
         TCSLogWithMark()
@@ -76,8 +111,8 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
         }
 
         try? KeychainUtil().storeDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", data:data , group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
- 
-        showLoginSuccessful()
+        let userInfo = try? TokenManager.webhookPayloadFromCredentials(credentials)
+        showLoginSuccessful(info: userInfo)
 //        NotificationCenter.default.post(name: Notification.Name("TCSTokensUpdated"), object: self, userInfo:["credentials":credWithPass]
 //                       )
 
@@ -105,7 +140,6 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
 //
 //    }
     func loadPage() {
-        try? KeychainUtil().removeItemInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
 
         Task{ @MainActor in
             TCSLogWithMark("Clearing cookies")
