@@ -23,7 +23,7 @@ extension URLSession {
         }
         return data
     }
-    // TODO: both functions below need to post serial number and user id
+
     func postWebHook(url: URL, token: String, payload: [String: String]) {
         Task {
             do {
