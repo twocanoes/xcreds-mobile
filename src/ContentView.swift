@@ -198,15 +198,11 @@ struct ContentView: View {
                             if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSystemInfoButton.rawValue)==true{
 
                                 Button(UserDefaults.standard.string(forKey: PrefKeys.systemInfoButtonTitle.rawValue) ?? "System Info") {
-                                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-                                        if success {
-                                            //                                            Logging.sharedLogger.printLog("All set!")
-                                        } else if let error = error {
-                                            //                                            TCSLo(error.localizedDescription)
-                                        }
-                                    }
-                                    
-                                    if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
+                                    UNUserNotificationCenter
+                                        .current()
+                                        .requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+
+                                        if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
                                         showingPopover = true
                                     }
                                     
