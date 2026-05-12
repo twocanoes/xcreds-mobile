@@ -556,6 +556,26 @@ extension TokenManager {
 
         }
     }
+
+    static func webhookPayloadFromCredentials(_ credentials: Creds) throws -> [String: String]? {
+
+        guard let infoDict = credentials.dictionary else { return nil }
+
+        var userInfo = [String: String]()
+        if let username = infoDict["username"] as? String,
+           !username.isEmpty {
+            userInfo["username"] = username
+        }
+        if let email = infoDict["email"] as? String,
+           !email.isEmpty {
+            userInfo["email"] = email
+        }
+        if let serial = UserDefaults.standard.string(forKey: PrefKeys.deviceSerial.rawValue),
+           !serial.isEmpty {
+            userInfo[PrefKeys.deviceSerial.rawValue] = serial
+        }
+        return userInfo
+    }
 }
 
 extension String {

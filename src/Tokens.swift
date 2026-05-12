@@ -45,5 +45,10 @@ struct Creds:Codable{
 
 }
 
-
-
+extension Creds {
+    static func fromKeychain() throws -> Creds {
+        let keychainData = try KeychainUtil().findDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group: "UXP6YEHSPW.com.twocanoes.xcreds-mobile")
+        let decoder = PropertyListDecoder()
+        return try decoder.decode(Creds.self, from: keychainData)
+    }
+}
