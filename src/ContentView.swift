@@ -346,7 +346,6 @@ struct ContentView: View {
                 UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                     Task{
                         if try await LocalNotificationManager.sharedManager.requestAuthorizationForNotifications() == true {
-                            LocalNotificationManager.sharedManager.sendNotification(message: "Tap to Lock")
                         }
                         UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
                             postWebhookEvent(.login)
@@ -413,7 +412,7 @@ struct ContentView: View {
                 case (_, .background):
                     let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
 
-                    LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>29 ? notificationTimer:0)
+                    LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>59 ? notificationTimer:0)
                 default:
                     TCSLogDebugWithMark("Ignoring phase change from \(oldPhase) to \(newPhase)")
             }

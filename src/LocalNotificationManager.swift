@@ -34,12 +34,14 @@ import UserNotifications
         content.title = "XCreds Mobile"
         
         content.body = message
-        if repeatSeconds > 10 {
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(repeatSeconds), repeats: repeatSeconds > 60)
+        if repeatSeconds > 59 {
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(repeatSeconds), repeats: repeatSeconds > 59)
             // choose a random identifier
             let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
             
             // add our notification request
+            UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
             UNUserNotificationCenter.current().add(request)
 
         }
