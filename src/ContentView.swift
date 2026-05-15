@@ -365,8 +365,8 @@ struct ContentView: View {
             }
             else {
                 UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
-                    let data = try? KeychainUtil().findDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group: "UXP6YEHSPW.com.twocanoes.xcreds-mobile")
-                    let info = TokenManager()
+//                    let data = try? KeychainUtil().findDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", group: "UXP6YEHSPW.com.twocanoes.xcreds-mobile")
+//                    let info = TokenManager()
                     TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
                     postWebhookEvent(.login)
                 })
@@ -406,7 +406,8 @@ struct ContentView: View {
             switch (oldPhase, newPhase) {
                 case (_, .active):
                     print("Active")
-                    //                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { // Change `2.0` to the desired number of seconds.
+                UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
                     UIAccessibility.requestGuidedAccessSession(enabled: true, completionHandler: { enabled in
                         samActive=true
                         webView.loadPage()
@@ -418,9 +419,8 @@ struct ContentView: View {
                     loadPage=true
                     webView.loadPage()
                 case (_, .background):
-                    let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
-
-                    LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>59 ? notificationTimer:0)
+                
+                    break
                 default:
                     TCSLogDebugWithMark("Ignoring phase change from \(oldPhase) to \(newPhase)")
             }

@@ -44,6 +44,11 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
                 TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
                 self.postLoginWebhook(info: info)
             }
+            let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
+            
+            LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>59 ? notificationTimer:60)
+            
+            
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
 #if DEBUG
                 TCSLogDebugWithMark("Not calling exit() in DEBUG build")
