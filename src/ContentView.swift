@@ -201,10 +201,9 @@ struct ContentView: View {
                                     UNUserNotificationCenter
                                         .current()
                                         .requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
-
-                                        if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
+                                    
                                         showingPopover = true
-                                    }
+                                    
                                     
                                     
                                 }
@@ -221,6 +220,11 @@ struct ContentView: View {
                                         if let version = versionString() {
                                             Text("XCreds: \(version)")
                                         }
+                                        Text("Thanks to North Carolina State University and Everette Allen for funding the initial development of XCreds Mobile.")
+                                            .font(.footnote)
+                                            .italic()
+                                            .frame(width: 250)
+                                            .padding([.top])
                                     }
                                     .padding()
                                     
@@ -342,6 +346,10 @@ struct ContentView: View {
         }
         .onAppear(){
             readDefaults()
+            if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
+                showingPopover = true
+            }
+
             if UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue) > 59 {
                 UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
                     Task{

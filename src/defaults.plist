@@ -7,7 +7,7 @@
 	<key>shouldExitOnSuccessfulAuth</key>
 	<true/>
 	<key>shouldActivateSystemInfoButton</key>
-	<true/>
+	<false/>
 	<key>systemInfoButtonTitle</key>
 	<string>System Info</string>
 	<key>notificationReminderTimerSeconds</key>
