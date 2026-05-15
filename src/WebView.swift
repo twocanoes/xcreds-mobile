@@ -151,6 +151,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
             TCSLogWithMark()
            
             self.navigationDelegate = self
+            
             TCSLogWithMark("Network monitor: adding connectivity status change observer")
 
             do {
@@ -175,14 +176,14 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
                 var html = "<!DOCTYPE html><html><head><style>.center-screen { display: flex;flex-direction: column;justify-content: center;align-items: center;text-align: center;min-height: 100vh;}</style></head><body><div class=\"center-screen\"> <h1>\(loadPageTitle)</h1><p>\(loadPageInfo)</p></div></body></html>"
 
                 
-                let defaultsPath = Bundle(for: type(of: self)).path(forResource: "defaults", ofType: "plist")
+//                let defaultsPath = Bundle(for: type(of: self)).path(forResource: "defaults", ofType: "plist")
 
                 //if the user has not modified the screen, then we use our fancy new one.
-                if let defaultsPath = defaultsPath,
-                    let defaultsDict = NSDictionary(contentsOfFile: defaultsPath) as? Dictionary<String, Any>,
-                   let defaultsPageTitle=defaultsDict["loadPageTitle"] as? String, defaultsPageTitle==loadPageTitle,
-                   let defaultsPageInfo=defaultsDict["loadPageInfo"] as? String,
-                    defaultsPageInfo==loadPageInfoFromPrefs{
+//                if let defaultsPath = defaultsPath,
+//                    let defaultsDict = NSDictionary(contentsOfFile: defaultsPath) as? Dictionary<String, Any>,
+//                   let defaultsPageTitle=defaultsDict["loadPageTitle"] as? String, defaultsPageTitle==loadPageTitle,
+//                   let defaultsPageInfo=defaultsDict["loadPageInfo"] as? String,
+//                    defaultsPageInfo==loadPageInfoFromPrefs{
                         
                         html = """
                 <html>
@@ -239,9 +240,9 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
                   </body>
                 </html>
 """
-                    }
+//                    }
                 
-                loadHTMLString("html", baseURL: nil)
+                loadHTMLString(html, baseURL: nil)
 
             }
         }
