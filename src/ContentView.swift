@@ -279,7 +279,7 @@ struct ContentView: View {
                             //
                             
                             if wifiNetworks.count>0{
-                                Button("wifi"){
+                                Button("Wi-Fi"){
                                     showingWifiPopover=true
                                     //
                                 }
