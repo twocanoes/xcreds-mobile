@@ -25,7 +25,7 @@ struct ContentView: View {
     @State var password:String=""
     @State var loggedIn:Bool = false
     @State var samActive = false
-    @State var showWebLogin = false
+    @State var isWebLoginConfigured = false
     @State var resetOIDC = false
     @Environment(\.webAuthenticationSession) private var webAuthenticationSession
     @State var loadPage:Bool
@@ -58,74 +58,74 @@ struct ContentView: View {
      if let imagePathURL = DefaultsOverride.standardOverride.string(forKey: PrefKeys.loginWindowBackgroundImageURL.rawValue), let image = NSImage.imageFromPathOrURL(pathURLString: imagePathURL){
 
      */
-    fileprivate func LocalLoginView() -> ZStack<TupleView<(some View, some View)>> {
-        return ZStack{
-            Image("DefaultAerial")
-                .resizable()
-                .scaledToFill()
-                .frame(minWidth: 0)
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                
-                if samActive==false {
-                    
-                    Text("Single App Mode Not Enabled")
-                        .font(.title)
-                        .bold()
-                        .foregroundStyle(.red)
-                        .padding(.top)
-                }
-                Text(dateFormatter.string(from: currentDate))
-                    .font(.system(size: 28))
-                    .foregroundColor(.white)
-                    .opacity(0.5)
-                    .bold()
-                    .padding(.top, 80)
-                Text(timeFormatter.string(from: currentDate))
-                    .font(.system(size: 110))
-                    .foregroundColor(.white)
-                    .opacity(0.5)
-                    .bold()
-                    .frame(height:60)
-                Spacer()
-                
-                TextField("Username", text: $username, prompt: Text("Username").foregroundColor(.black))
-                    .font(.system(size: 14))
-                    .padding(.leading, 15)
-                    .frame(width: 200, height:30)
-                    .background(.regularMaterial)
-                    .cornerRadius(20)
-                    .autocorrectionDisabled(true)
-                
-                SecureField("Password", text: $password, prompt: Text("Enter Password").foregroundColor(.black))
-                    .textContentType(.none)
-                    .autocorrectionDisabled(true)
-                
-                    .font(.system(size: 14))
-                    .padding(.leading, 15)
-                    .frame(width: 200, height:30)
-                    .background(.regularMaterial)
-                    .cornerRadius(20)
-                
-                    .onSubmit {
-                        loggedIn=true
-                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-                            samActive=false
-                            TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
-                            postWebhookEvent(.login)
-                        })
-                    }
-                
-                
-                
-                
-            }
-            .padding(.bottom,50)
-            
-        }
-        
-    }
+//    fileprivate func LocalLoginView() -> ZStack<TupleView<(some View, some View)>> {
+//        return ZStack{
+//            Image("DefaultAerial")
+//                .resizable()
+//                .scaledToFill()
+//                .frame(minWidth: 0)
+//                .edgesIgnoringSafeArea(.all)
+//            
+//            VStack {
+//                
+//                if samActive==false {
+//                    
+//                    Text("Single App Mode Not Enabled")
+//                        .font(.title)
+//                        .bold()
+//                        .foregroundStyle(.red)
+//                        .padding(.top)
+//                }
+//                Text(dateFormatter.string(from: currentDate))
+//                    .font(.system(size: 28))
+//                    .foregroundColor(.white)
+//                    .opacity(0.5)
+//                    .bold()
+//                    .padding(.top, 80)
+//                Text(timeFormatter.string(from: currentDate))
+//                    .font(.system(size: 110))
+//                    .foregroundColor(.white)
+//                    .opacity(0.5)
+//                    .bold()
+//                    .frame(height:60)
+//                Spacer()
+//                
+//                TextField("Username", text: $username, prompt: Text("Username").foregroundColor(.black))
+//                    .font(.system(size: 14))
+//                    .padding(.leading, 15)
+//                    .frame(width: 200, height:30)
+//                    .background(.regularMaterial)
+//                    .cornerRadius(20)
+//                    .autocorrectionDisabled(true)
+//                
+//                SecureField("Password", text: $password, prompt: Text("Enter Password").foregroundColor(.black))
+//                    .textContentType(.none)
+//                    .autocorrectionDisabled(true)
+//                
+//                    .font(.system(size: 14))
+//                    .padding(.leading, 15)
+//                    .frame(width: 200, height:30)
+//                    .background(.regularMaterial)
+//                    .cornerRadius(20)
+//                
+//                    .onSubmit {
+//                        loggedIn=true
+//                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
+//                            samActive=false
+//                            TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
+//                            postWebhookEvent(.login)
+//                        })
+//                    }
+//                
+//                
+//                
+//                
+//            }
+//            .padding(.bottom,50)
+//            
+//        }
+//        
+//    }
     // Pull version and build info from bundle.
     func versionString() -> String? {
         let fullVersionString: String?
@@ -172,37 +172,49 @@ struct ContentView: View {
                                 .resizable(resizingMode: .stretch)
                                 .ignoresSafeArea()
                         } placeholder: {}
-
+                        
                     }
-                    if showWebLogin == true {
+                    
+                    VStack{
+                        if UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue) == nil {
+                            
+                            Text("No configuration detected. Please install a configuration profile." )
+                                .font(.title)
+                                .foregroundStyle(.red)
+                        }
+
+                        //                    LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC )
+                        //                        .refreshable{
+                        //                            webView.loadPage()
+                        //
+                        //                        }
                         let width = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowWidth.rawValue))
                         let height = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowHeight.rawValue))
-
+                        
                         LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC )
                             .refreshable{
                                 webView.loadPage()
-
+                                
                             }
                             .frame(width: width > 150 ? width: nil,height: height > 150 ? height: nil)
                             .ignoresSafeArea()
-
-                    }
-                    else {
-                        LocalLoginView()
+                        
+                        
+                        
                     }
                     VStack{
-
+                        
                         Spacer()
-
+                        
                         HStack {
                             if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSystemInfoButton.rawValue)==true{
-
+                                
                                 Button(UserDefaults.standard.string(forKey: PrefKeys.systemInfoButtonTitle.rawValue) ?? "System Info") {
                                     UNUserNotificationCenter
                                         .current()
                                         .requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
                                     
-                                        showingPopover = true
+                                    showingPopover = true
                                     
                                     
                                     
@@ -328,22 +340,23 @@ struct ContentView: View {
                     }
                     
                 }
-
             }
-            else {
-                
-                Text("Logged In")
-                Button("reset"){
-                    password=""
-                    username=""
-                    loggedIn=false
-
-                }
-
-                
-            }
-
+            
         }
+//            else {
+//                
+//                Text("Logged In")
+//                Button("reset"){
+//                    password=""
+//                    username=""
+//                    loggedIn=false
+//
+//                }
+//
+//                
+//            }
+
+        
         .onAppear(){
             readDefaults()
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
@@ -390,7 +403,7 @@ struct ContentView: View {
             readDefaults()
             updatePrefsFromManagedPrefs()
             if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
-                showWebLogin=true
+                isWebLoginConfigured=true
             }
             guard let wifiNetworksFromPrefs = UserDefaults.standard.array(forKey: PrefKeys.wifiNetworks.rawValue) as? Array<Dictionary<String,String>> else {
                 return

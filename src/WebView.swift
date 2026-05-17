@@ -148,7 +148,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
 
         Task{ @MainActor in
             TCSLogWithMark("Clearing cookies")
-            self.cleanAllCookies()
+            await self.cleanAllCookies()
             TCSLogWithMark()
 
             self.navigationDelegate = self
@@ -162,11 +162,23 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
             do {
                 
                 self.customUserAgent = "Mozilla/5.0 (iPad; CPU OS 18_7_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1"
-                let url = try await self.getOidcLoginURL()
-                TCSLogWithMark("URL: \(url)");
-
-                self.load(URLRequest(url: url))
-//                NetworkMonitor.shared.stopMonitoring()
+                if let discoveryURL = UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue), discoveryURL.isEmpty==false{
+                    let url = try await self.getOidcLoginURL()
+                    TCSLogWithMark("URL: \(url)");
+                
+                    self.load(URLRequest(url: url))
+                }
+                
+                else {
+                    let urlString = UserDefaults.standard.string(forKey: PrefKeys.productKbaseURLString.rawValue) ?? "https://twocanoes.com"
+                    
+                    if let url = URL(string: urlString){
+                        
+                        self.load(URLRequest(url: url))
+                    }
+                    
+                }
+            
             }
             catch {
                 TCSLogWithMark("error: \(error)");
@@ -545,14 +557,19 @@ extension String {
 }
 extension WKWebView {
 
-    func cleanAllCookies() {
-        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-        print("All cookies deleted")
-
-        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-            records.forEach { record in
-                WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
-                print("Cookie ::: \(record) deleted")
+    func cleanAllCookies() async {
+        
+        DispatchQueue.main.async {
+            
+            
+            HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+            print("All cookies deleted")
+            
+            WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+                records.forEach { record in
+                    WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+                    print("Cookie ::: \(record) deleted")
+                }
             }
         }
     }
