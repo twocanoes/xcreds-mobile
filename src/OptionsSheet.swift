@@ -16,6 +16,8 @@ struct OptionsSheet: View {
     @AppStorage(PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) var shouldSetGoogleAccessTypeToOffline: Bool = false
     @AppStorage("settingsURL") var settingsURL: String = ""
 
+    @AppStorage(PrefKeys.redirectURI.rawValue) var redirectURI:String = ""
+
 
 
     @Binding var optionsSheetIsPresented: Bool
@@ -46,6 +48,10 @@ struct OptionsSheet: View {
                             Text("Discovery URL:")
                             TextField("Discovery URL", text: $discoveryURL)
                         }
+                        .keyboardType(.URL)
+                        .autocorrectionDisabled()
+                        .autocapitalization(.none)
+                        
                         HStack{
                             Text("Client Secret:")
                             TextField("secret", text: $clientSecret)
@@ -54,6 +60,11 @@ struct OptionsSheet: View {
                         HStack{
                             Text("clientID:")
                             TextField("clientID", text: $clientID)
+                            
+                        }
+                        HStack{
+                            Text("redirect URI:")
+                            TextField("redirectURI", text: $redirectURI)
                             
                         }
                         HStack{
@@ -73,7 +84,7 @@ struct OptionsSheet: View {
 
 
                     }
-                    .disabled(true)
+//                    .disabled(true)
 //                    Section(header: Text("WiFi")) {
 //                        HStack{
 //                                            Text("WiFi SSID:")
@@ -92,14 +103,14 @@ struct OptionsSheet: View {
 //                                        
 //                    }
 //                    .disabled(true)
-                    Section(header: Text("Load Settings From URL")) {
-                        TextField("URL", text: $settingsURL)
-                        Button("Load"){
-                            
-                            loadURL()
-                        }
-
-                    }
+//                    Section(header: Text("Load Settings From URL")) {
+//                        TextField("URL", text: $settingsURL)
+//                        Button("Load"){
+//                            
+//                            loadURL()
+//                        }
+//
+//                    }
 
 
                 }
@@ -129,6 +140,15 @@ struct OptionsSheet: View {
                 Text("OK")
                     .frame(width: 50)
             }
+//            .simultaneousGesture(LongPressGesture().onEnded { _ in
+//                discoveryURL = "https://accounts.google.com/.well-known/openid-configuration"
+//                clientSecret = "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"
+//                clientID = "421164668086-v3ocec44vrmgjjh41h9r2hj6cjh5erpk.apps.googleusercontent.com"
+//                scopes = "profile openid email"
+//                shouldSetGoogleAccessTypeToOffline = true
+//                redirectURI = "https://twocanoes.com/xcreds-redirect"
+//            })
+            
             .padding()
 
             

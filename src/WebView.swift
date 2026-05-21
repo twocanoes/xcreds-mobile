@@ -15,6 +15,9 @@ import SwiftUI
 class WebView:WKWebView, TokenManagerFeedbackDelegate {
     var authToken:String?
     var eventURL: String?
+    var tokenManager=TokenManager()
+    var password:String?
+    var delegate:LoginWebViewDelegate?=nil
     func invalidCredentials() {
         
     }
@@ -27,6 +30,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         super.init(frame: frame, configuration: configuration)
         tokenManager.feedbackDelegate=self
+
     }
     
     required init?(coder: NSCoder) {
@@ -35,46 +39,53 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     
     
 
-    func showLoginSuccessful(info: [String: String]? = nil){
-        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { success in
-            if !success {
-                TCSLogErrorWithMark("Did not successfully transition out of guided access session.")
-            }
-            if let info {
-                TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
-                self.postLoginWebhook(info: info)
-            }
-            let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
-            
-            LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>59 ? notificationTimer:60)
-            
-            
-            if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
+    func showLoginSuccessful(credentials: Creds? = nil){
+
+        if UserDefaults.standard.bool(forKey: PrefKeys.shouldHideOIDCResults.rawValue)==true{
+            UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { success in
+                if !success {
+                    TCSLogErrorWithMark("Did not successfully transition out of guided access session.")
+                }
+                if let credentials = credentials, let userInfo = try? TokenManager.webhookPayloadFromCredentials(credentials) {
+                    TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
+                    self.postLoginWebhook(info: userInfo)
+                }
+                let notificationTimer = UserDefaults.standard.integer(forKey: PrefKeys.notificationReminderTimerSeconds.rawValue)
+                
+                LocalNotificationManager().sendNotification(message: "Tap to Lock", repeatSeconds: notificationTimer>59 ? notificationTimer:60)
+                
+                
+                if UserDefaults.standard.bool(forKey: PrefKeys.shouldExitOnSuccessfulAuth.rawValue){
 #if DEBUG
-                TCSLogDebugWithMark("Not calling exit() in DEBUG build")
-                // Faking it here so it stays attached to the debugger
-                if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
-                   let html = try? String(contentsOf: filePath, encoding: .utf8){
+                    TCSLogDebugWithMark("Not calling exit() in DEBUG build")
+                    // Faking it here so it stays attached to the debugger
+                    if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
+                       let html = try? String(contentsOf: filePath, encoding: .utf8){
+                        self.loadHTMLString(html, baseURL: nil)
+                    }
+                    else {
+                        self.loadPage()
+                    }
+#else
+                    exit(0);
+#endif
+                }
+                else if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
+                        let html = try? String(contentsOf: filePath, encoding: .utf8){
+                    
                     self.loadHTMLString(html, baseURL: nil)
+                    
                 }
                 else {
                     self.loadPage()
                 }
-#else
-                exit(0);
-#endif
-            }
-            else if let filePath = Bundle.main.url(forResource: "swipe_up", withExtension: "html"),
-                    let html = try? String(contentsOf: filePath, encoding: .utf8){
-
-                self.loadHTMLString(html, baseURL: nil)
                 
-            }
-            else {
-                self.loadPage()
-            }
+            })
+        }
+        else {
+            delegate?.loggedIn(credentials: credentials)
             
-        })
+        }
         
     }
     func postLoginWebhook(info: [String: String]) {
@@ -116,37 +127,12 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
         }
 
         try? KeychainUtil().storeDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", data:data , group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
-        let userInfo = try? TokenManager.webhookPayloadFromCredentials(credentials)
-        showLoginSuccessful(info: userInfo)
-//        NotificationCenter.default.post(name: Notification.Name("TCSTokensUpdated"), object: self, userInfo:["credentials":credWithPass]
-//                       )
-
-//        updateCredentialsFeedbackDelegate?.credentialsUpdated(credWithPass)
+        showLoginSuccessful(credentials: credentials)
     }
-//  
-//    @IBOutlet weak var refreshTitleTextField: NSTextField?
-//    @IBOutlet weak var cancelButton: NSButton!
-//    @available(macOS, deprecated: 11)
-    var tokenManager=TokenManager()
-    
-    var password:String?
-//    var updateCredentialsFeedbackDelegate: UpdateCredentialsFeedbackProtocol?
-
-//    override func viewWillAppear() {
-//        if let refreshTitleTextField = self.refreshTitleTextField {
-//            refreshTitleTextField.isHidden = !UserDefaults.standard.bool(forKey: PrefKeys.shouldShowRefreshBanner.rawValue)
-//
-//
-//            if let refreshBannerText = UserDefaults.standard.string(forKey: PrefKeys.refreshBannerText.rawValue) {
-//                self.refreshTitleTextField?.stringValue = refreshBannerText
-//            }
-//
-//        }
-//
-//    }
     func loadPage() {
 
         Task{ @MainActor in
+            
             TCSLogWithMark("Clearing cookies")
             await self.cleanAllCookies()
             TCSLogWithMark()

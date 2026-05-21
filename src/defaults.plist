@@ -14,5 +14,7 @@
 	<integer>60</integer>
 	<key>productKbaseURLString</key>
 	<string>https://twocanoes.com/knowledge-base/xcreds-on-ipad/</string>
+	<key>shouldHideOIDCResults</key>
+	<false/>
 </dict>
 </plist>
