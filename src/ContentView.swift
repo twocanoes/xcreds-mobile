@@ -264,30 +264,30 @@ struct ContentView: View {
                             }
                             .padding()
                         }
-                        
-                        Spacer()
-                        Button(action:{
-                            optionsSheetIsPresented=true
-                        }) {
-                            Image(systemName: "gear.circle.fill")
-                                .resizable() // This allows the image to be resized
-                                .frame(width: 25, height: 25) // This sets the size of the image
+                        if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSettingsButton.rawValue)==true{
+                            Spacer()
+                            Button(action:{
+                                optionsSheetIsPresented=true
+                            }) {
+                                Image(systemName: "gear.circle.fill")
+                                    .resizable() // This allows the image to be resized
+                                    .frame(width: 25, height: 25) // This sets the size of the image
+                                
+                            }
+//                            .controlSize(.extraLarge)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 8)
+                            .sheet(isPresented: $optionsSheetIsPresented) {
+                                
+                            } content: {
+                                OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .keyboardShortcut(",")
+                            .labelStyle(.iconOnly)
+                            .padding()
                             
                         }
-                        .controlSize(.extraLarge)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 8)
-                        .sheet(isPresented: $optionsSheetIsPresented) {
-                            
-                        } content: {
-                            OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .keyboardShortcut(",")
-                        .labelStyle(.iconOnly)
-                        .padding()
-                        
-                        
                         
                         if wifiNetworks.count>0{
                             Button("Wi-Fi"){

@@ -16,5 +16,7 @@
 	<string>https://twocanoes.com/knowledge-base/xcreds-on-ipad/</string>
 	<key>shouldHideOIDCResults</key>
 	<false/>
+	<key>shouldShowSettingsButton</key>
+	<true/>
 </dict>
 </plist>
