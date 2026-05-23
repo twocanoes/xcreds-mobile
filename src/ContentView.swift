@@ -286,6 +286,11 @@ struct ContentView: View {
                             .keyboardShortcut(",")
                             .labelStyle(.iconOnly)
                             .padding()
+                            .onChange(of: optionsSheetIsPresented) { oldValue, newValue in
+                                if newValue == false {
+                                    webView.tokenManager.resetOIDC()
+                                }
+                            }
                             
                         }
                         
