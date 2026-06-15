@@ -13,7 +13,7 @@ struct OptionsSheet: View {
     @AppStorage(PrefKeys.clientSecret.rawValue) var clientSecret: String = ""
     @AppStorage(PrefKeys.clientID.rawValue) var clientID: String = ""
     @AppStorage(PrefKeys.scopes.rawValue) var scopes: String = ""
-    @AppStorage(PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) var shouldSetGoogleAccessTypeToOffline: Bool = false
+//    @AppStorage(PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) var shouldSetGoogleAccessTypeToOffline: Bool = false
     @AppStorage("settingsURL") var settingsURL: String = ""
 
     @AppStorage(PrefKeys.redirectURI.rawValue) var redirectURI:String = ""
@@ -53,15 +53,16 @@ struct OptionsSheet: View {
                         .autocapitalization(.none)
                         
                         HStack{
-                            Text("Client Secret:")
-                            TextField("secret", text: $clientSecret)
-                            
-                        }
-                        HStack{
                             Text("clientID:")
                             TextField("clientID", text: $clientID)
                             
                         }
+                        HStack{
+                            Text("Client Secret:")
+                            TextField("secret", text: $clientSecret)
+                            
+                        }
+
                         HStack{
                             Text("redirect URI:")
                             TextField("redirectURI", text: $redirectURI)
@@ -73,13 +74,13 @@ struct OptionsSheet: View {
                             TextField("Scopes", text: $scopes)
                             
                         }
-                        HStack{
-                            Toggle(isOn: $shouldSetGoogleAccessTypeToOffline) {
-                                Text("shouldSetGoogleAccessTypeToOffline")
-                            }
-                            
-                            
-                        }
+//                        HStack{
+//                            Toggle(isOn: $shouldSetGoogleAccessTypeToOffline) {
+//                                Text("shouldSetGoogleAccessTypeToOffline")
+//                            }
+//                            
+//                            
+//                        }
                       
 
 
@@ -128,7 +129,7 @@ struct OptionsSheet: View {
                 clientSecret = ""
                 clientID = ""
                 scopes = ""
-                shouldSetGoogleAccessTypeToOffline = false
+//                shouldSetGoogleAccessTypeToOffline = false
                 
             }
             .padding()

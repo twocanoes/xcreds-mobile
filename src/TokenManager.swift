@@ -89,10 +89,10 @@ class TokenManager {
         if let scopesRaw = UserDefaults.standard.string(forKey: PrefKeys.scopes.rawValue) {
             scopes = scopesRaw.components(separatedBy: " ")
         }
-        if UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) == true {
-
-            additionalParameters["access_type"]="offline"
-        }
+//        if UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) == true {
+//
+//            additionalParameters["access_type"]="offline"
+//        }
         if let domain=UserDefaults.standard.string(forKey: PrefKeys.googleHostDomain.rawValue), domain.isEmpty==false
         {
             additionalParameters["hd"]=domain
@@ -510,7 +510,7 @@ extension TokenManager {
 
         TCSLogWithMark("======== tokenResponse =========")
         RunLoop.main.perform {
-            let googleAuth = UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue)
+//            let googleAuth = UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue)
 
 
             let xcredCreds = Creds(password: nil, tokens: tokens)
@@ -519,20 +519,20 @@ extension TokenManager {
                 TCSLogWithMark("Found access and refresh token")
 
             }
-            if googleAuth {
-                TCSLogWithMark("Found google auth")
-
-            }
+//            if googleAuth {
+//                TCSLogWithMark("Found google auth")
+//
+//            }
             if xcredCreds.hasAccess() {
                 TCSLogWithMark("found access token")
 
             }
-            if googleAuth && xcredCreds.hasAccess() {
-                TCSLogWithMark("Found google auth and access token")
+//            if googleAuth && xcredCreds.hasAccess() {
+//                TCSLogWithMark("Found google auth and access token")
+//
+//            }
 
-            }
-
-            if xcredCreds.hasAccessAndRefresh() || (googleAuth && xcredCreds.hasAccess()) {
+            if xcredCreds.hasAccess() {
 //                XCredsAudit().refreshTokenUpdated(true)
                 self.feedbackDelegate?.credentialsUpdated(xcredCreds)
             }

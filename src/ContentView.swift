@@ -194,7 +194,12 @@ struct ContentView: View {
                             .ignoresSafeArea()
                     }
                     else {
+                        Text("Congratuations! You have successfully authenticated to your Identity Provider! Below is the contents of your identity token returned from the identity provider. Tap Refresh to try again.")
+                            .font(.title)
+                            .padding()
+                        
                         Text("OIDC ID Token")
+
                         if let credentials = credentials,
                             let dict = credentials.dictionary,
                             let idToken = dict["idToken"] as? IDToken {
