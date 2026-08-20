@@ -180,3 +180,7 @@ struct OptionsSheet: View {
     }
 
 }
+
+#Preview {
+    OptionsSheet(optionsSheetIsPresented: .constant(true))
+}
