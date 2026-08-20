@@ -34,6 +34,7 @@ struct InspectorSplitView: View {
     @State private var password: String = ""
     @State private var resource: String = ""
     @State private var fetchResponse: FetchedToken = .prefetch
+    @State private var idToken: IDToken?
     private var isButtonDisabled: Bool {
         if case .fetching = fetchResponse {
             return true
@@ -98,6 +99,11 @@ struct InspectorSplitView: View {
         } detail: {
             FetchedTokenView(status: fetchResponse)
         }
+        #if DEBUG
+        .onAppear {
+            try? prepopulate()
+        }
+        #endif
     }
     var fetchButton: some View {
         Button {
@@ -183,11 +189,7 @@ struct InspectorSplitView: View {
             resource: resource)
         do {
             try await obj.getEndpoints()
-            let response = try await obj.requestTokenWithROPG(username: username, password: password, basicAuth: false, overrideErrors: nil)
-            if let response {
-                print(response)
-            }
-            return response
+            return try await obj.requestTokenWithROPG(username: username, password: password, basicAuth: false, overrideErrors: nil)
         }
         catch let error as OIDCLiteError {
             print("Error: \(error.errorDescription ?? "No description")")
@@ -200,6 +202,28 @@ struct InspectorSplitView: View {
     }
 }
 
+#if DEBUG
+extension InspectorSplitView {
+    func prepopulate() throws {
+        guard let url = Bundle.main.url(forResource: "creds", withExtension: "plist")
+               else {
+            return
+        }
+        let data = try Data(contentsOf: url)
+        let obj = try PropertyListSerialization.propertyList(from: data, format: nil) as! [String : Any]
+        discoverURL = URL(string: (obj["discoveryURL"] as? String) ?? "")
+        clientID = (obj["clientID"] as? String) ?? ""
+        clientSecret = (obj["clientSecret"] as? String) ?? ""
+        redirectURI = URL(string: (obj["redirectURI"] as? String) ?? "")
+        scopes = (obj["scopes"] as? String) ?? ""
+        useROPG = (obj["useROPG"] as? Bool) ?? true
+        username = (obj["username"] as? String) ?? ""
+        password = (obj["password"] as? String) ?? ""
+        resource = (obj["resource"] as? String) ?? ""
+        fetchResponse = .prefetch
+    }
+}
+#endif
 
 #Preview {
     InspectorView()

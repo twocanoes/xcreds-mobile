@@ -38,27 +38,25 @@ struct FetchedTokenView: View {
 }
 struct TokenDetailView: View {
     var token: OIDCLite.TokenResponse
+    var jwt: IDToken? {
+        do {
+            let creds = Creds(password: nil, tokens: token)
+            guard let info = try TokenManager().tokenInfo(fromCredentials: creds) else { return nil }
+            let token: IDToken? = info["idToken"] as? IDToken
+            return token
+        }
+        catch {
+            return nil
+        }
+    }
     var body: some View {
         List {
-            labeledOptional(key: "Access Token", value: token.accessToken)
-            labeledOptional(key: "ID Token", value: token.idToken)
-            labeledOptional(key: "Refresh Token", value: token.refreshToken)
-            labeledOptional(key: "Scope", value: token.scope)
-            labeledOptional(key: "Type", value: token.tokenType)
-            labeledOptional(key: "Expires in", value: token.expiresIn)
+            if let jwt {
+                JWTDetailSection(idToken: jwt)
+            }
+            ResponseDetailSection(token: token)
         }
         .navigationTitle("Token Details")
-    }
-    func labeledOptional(key: String, value: (some CustomStringConvertible)?) -> some View {
-        if let value {
-            LabeledContent(key, value: value.description)
-        }
-        else {
-            LabeledContent(key) {
-                Text("Not Available")
-                    .foregroundStyle(.red)
-            }
-        }
     }
 }
 
@@ -67,14 +65,14 @@ extension OIDCLite.TokenResponse {
         OIDCLite.TokenResponse(accessToken: String(repeating: "x", count: 2208),
                                idToken: String(repeating: "y", count: 871),
                                refreshToken: String(repeating: "z", count: 1365),
-                               expiresIn: 5190,
+                               expiresIn: 0000,
                                tokenType: "Bearer",
                                scope: "User.Read",
                                jsonDict: [:])
     }
 }
 #Preview("Success") {
-    FetchedTokenView(status: .fetched(.placeholder))
+    FetchedTokenView(status: .fetched(.preview))
 }
 #Preview("Missing Values") {
     FetchedTokenView(status: .fetched(OIDCLite.TokenResponse()))
