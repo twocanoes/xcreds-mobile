@@ -8,15 +8,23 @@
 import SwiftUI
 
 struct LabeledOptional<T: CustomStringConvertible>: View {
-    var key: String
+    var title: String
+    var subtitle: String?
     var value: T?
     var body: some View {
         if let value {
-            LabeledContent(key, value: value.description)
-                .textSelection(.enabled)
+            LabeledContent {
+                Text(value.description)
+                    .textSelection(.enabled)
+            } label: {
+                Text(title)
+                if let subtitle {
+                    Text(subtitle)
+                }
+            }
         }
         else {
-            LabeledContent(key) {
+            LabeledContent(title) {
                 Text("Not Available")
                     .foregroundStyle(.red)
             }
@@ -36,7 +44,8 @@ extension StringOrArray: CustomStringConvertible {
 
 #Preview(traits:.fixedLayout(width: 300, height: 300)) {
     List {
-        LabeledOptional(key: "Key", value: "Value")
-        LabeledOptional(key: "Key", value: Optional<String>.none)
+        LabeledOptional(title: "Key", value: "Value")
+        LabeledOptional(title: "Key", value: Optional<String>.none)
+        LabeledOptional(title: "Title", subtitle: "Subtitle", value: "Value")
     }
 }
