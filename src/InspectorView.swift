@@ -11,19 +11,19 @@ import OIDCLite
 
 let hasManagedSettings = false
 
-struct InspectorView: View {
+struct _InspectorView: View {
     var body: some View {
         if hasManagedSettings {
-            ContentView(loadPage: false)
+            //AuthenticationView(loadPage: false)
         }
         else {
-            InspectorSplitView()
+            InspectorView()
         }
     }
 }
 
 typealias Token = OIDCLite.TokenResponse
-struct InspectorSplitView: View {
+struct InspectorView: View {
     @State private var discoverURL: URL?
     @State private var clientID: String = ""
     @State private var clientSecret: String = ""
@@ -73,6 +73,7 @@ struct InspectorSplitView: View {
                         .autocorrectionDisabled()
                         .autocapitalization(.none)
                     Toggle("Use ROPG", isOn: $useROPG)
+                        .disabled(true)
                     if useROPG {
                         ROPGFields
                     }
@@ -203,7 +204,7 @@ struct InspectorSplitView: View {
 }
 
 #if DEBUG
-extension InspectorSplitView {
+extension InspectorView {
     func prepopulate() throws {
         guard let url = Bundle.main.url(forResource: "creds", withExtension: "plist")
                else {

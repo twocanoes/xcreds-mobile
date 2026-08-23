@@ -11,8 +11,7 @@ import SwiftUI
 struct XCredsMobileApp: App {
     var body: some Scene {
         WindowGroup {
-            InspectorView()
-            //ContentView(loadPage: false)
+            RootView()
         }
     }
 }

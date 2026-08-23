@@ -12,12 +12,12 @@ struct ResponseDetailSection: View {
     var token: OIDCLite.TokenResponse
     var body: some View {
         Section("Response") {
-            LabeledOptional(title: "Access Token", value: token.accessToken)
-            LabeledOptional(title: "ID Token", value: token.idToken)
-            LabeledOptional(title: "Refresh Token", value: token.refreshToken)
-            LabeledOptional(title: "Scope", value: token.scope)
-            LabeledOptional(title: "Type", value: token.tokenType)
-            LabeledOptional(title: "Expires in", value: token.expiresIn)
+            LabeledTextualView(title: "Access Token", value: token.accessToken)
+            LabeledTextualView(title: "ID Token", value: token.idToken)
+            LabeledTextualView(title: "Refresh Token", value: token.refreshToken)
+            LabeledTextualView(title: "Scope", value: token.scope)
+            LabeledTextualView(title: "Type", value: token.tokenType)
+            LabeledTextualView(title: "Expires in", value: token.expiresIn)
         }
     }
 }
@@ -26,17 +26,32 @@ struct JWTDetailSection: View {
     var idToken: IDToken
     var body: some View {
         Section("JWT") {
-            LabeledOptional(title: "Full Name", subtitle: "name", value: idToken.name)
-            LabeledOptional(title: "Last Name", subtitle: "family_name", value: idToken.family_name)
-            LabeledOptional(title: "Unique Name", subtitle: "unique_name", value: idToken.unique_name)
-            LabeledOptional(title: "Email Address", subtitle: "email", value: idToken.email)
-            LabeledOptional(title: "Issuer", subtitle: "iss", value: idToken.iss)
-            LabeledOptional(title: "Subject", subtitle: "sub", value: idToken.sub)
-            LabeledOptional(title: "Audience", subtitle: "aud", value: idToken.aud)
-            LabeledOptional(title: "Expiration Time", subtitle: "exp", value: idToken.exp)
-            LabeledOptional(title: "Issued At", subtitle: "iat", value: idToken.iat)
+            LabeledTextualView(title: "Full Name", subtitle: "name", value: idToken.name)
+            LabeledTextualView(title: "Last Name", subtitle: "family_name", value: idToken.family_name)
+            LabeledTextualView(title: "Unique Name", subtitle: "unique_name", value: idToken.unique_name)
+            LabeledTextualView(title: "Email Address", subtitle: "email", value: idToken.email)
+            LabeledTextualView(title: "Issuer", subtitle: "iss", value: idToken.iss)
+            LabeledTextualView(title: "Subject", subtitle: "sub", value: idToken.sub)
+            LabeledTextualView(title: "Audience", subtitle: "aud", value: idToken.aud)
+            LabeledTextualView(title: "Expiration Time", subtitle: "exp", value: idToken.exp)
+            LabeledTextualView(title: "Issued At", subtitle: "iat", value: idToken.iat)
         }
     }
+}
+
+struct JWTCompleteDetailsSection: View {
+    var info: [String: Any]
+    var keys: [String] {
+        Array(info.keys)
+    }
+    var body: some View {
+        Section("JWT") {
+            ForEach(keys, id: \.self) { key in
+                LabeledTextualView(title: key, value: info[key])
+            }
+        }
+    }
+
 }
 
 #Preview("JWT") {

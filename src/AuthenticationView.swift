@@ -16,27 +16,34 @@ enum WebhookEvent: String {
     case logout = "xcreds-mobile.logout"
 }
 
-struct ContentView: View {
-    @State var optionsSheetIsPresented = false
-    
-    @State var timer:Timer?
-    @State var webView = WebView()
-    @State var username:String=""
-    @State var password:String=""
-    @State var samActive = false
-    @State var isWebLoginConfigured = false
-    @State var resetOIDC = false
-    @Environment(\.webAuthenticationSession) private var webAuthenticationSession
-    @State var loadPage:Bool
-    @Environment(\.authorizationController) private var authorizationController
-    @Environment(\.scenePhase) private var scenePhase
-    
+struct AuthenticationView: View {
+
+    @Binding var discoveryURL: String
+    @Binding var clientID: String
+    @Binding var clientSecret: String
+    @Binding var settingsURL: String
+    @Binding var redirectURI: String
+
+    @State private var loadPage: Bool = false
+    @State private var optionsSheetIsPresented = false
+    @State private var timer:Timer?
+    @State private var webView = WebView()
+    @State private var username:String=""
+    @State private var password:String=""
+    @State private var samActive = false
+    @State private var isWebLoginConfigured = false
+    @State private var resetOIDC = false
     @State private var showingPopover = false
     @State private var showingWifiPopover = false
     @State private var wifiNetworks:[WifiNetwork] = []
     @State private var isLoggedIn:Bool = false
     @State private var credentials:Creds?  = nil
     @State private var wifiSelection:WifiNetwork?
+
+    @Environment(\.webAuthenticationSession) private var webAuthenticationSession
+    @Environment(\.authorizationController) private var authorizationController
+    @Environment(\.scenePhase) private var scenePhase
+
     @AppStorage(PrefKeys.webHookAuthToken.rawValue) var webHookAuthToken: String?
     @AppStorage(PrefKeys.webHookURLString.rawValue) var webHookURLString: String?
     
@@ -283,9 +290,14 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity, alignment: .trailing)
                             .padding(.trailing, 8)
                             .sheet(isPresented: $optionsSheetIsPresented) {
-                                
-                            } content: {
-                                OptionsSheet(optionsSheetIsPresented: $optionsSheetIsPresented)
+                                OptionsSheet(
+                                    discoveryURL: $discoveryURL,
+                                    clientID: $clientID,
+                                    clientSecret: $clientSecret,
+                                    settingsURL: $settingsURL,
+                                    redirectURI: $redirectURI,
+                                    optionsSheetIsPresented: $optionsSheetIsPresented
+                                )
                             }
                             .buttonStyle(.borderedProminent)
                             .keyboardShortcut(",")
@@ -419,7 +431,7 @@ struct ContentView: View {
             loadPage=true
             readDefaults()
             updatePrefsFromManagedPrefs()
-            if let discoveryURL = UserDefaults.standard.value(forKey: PrefKeys.discoveryURL.rawValue) as? String, discoveryURL.isEmpty == false {
+            if discoveryURL.isEmpty == false {
                 isWebLoginConfigured=true
             }
             else {

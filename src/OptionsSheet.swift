@@ -8,19 +8,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 struct OptionsSheet: View {
 
-    
-    @AppStorage(PrefKeys.discoveryURL.rawValue) var discoveryURL: String = ""
-    @AppStorage(PrefKeys.clientSecret.rawValue) var clientSecret: String = ""
-    @AppStorage(PrefKeys.clientID.rawValue) var clientID: String = ""
-    @AppStorage(PrefKeys.scopes.rawValue) var scopes: String = ""
-//    @AppStorage(PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) var shouldSetGoogleAccessTypeToOffline: Bool = false
-    @AppStorage("settingsURL") var settingsURL: String = ""
-
-    @AppStorage(PrefKeys.redirectURI.rawValue) var redirectURI:String = ""
-
-
-
+    @Binding var discoveryURL: String
+    @Binding var clientID: String
+    @Binding var clientSecret: String
+    @Binding var settingsURL: String
+    @Binding var redirectURI: String
     @Binding var optionsSheetIsPresented: Bool
+
+    @AppStorage(PrefKeys.scopes.rawValue) var scopes: String = ""
+
+
+
 
     fileprivate func loadURL() {
         let url = URL(string:settingsURL )
@@ -182,5 +180,12 @@ struct OptionsSheet: View {
 }
 
 #Preview {
-    OptionsSheet(optionsSheetIsPresented: .constant(true))
+    OptionsSheet(
+        discoveryURL: .constant("https://discovery.example.com"),
+        clientID: .constant("Client id"),
+        clientSecret: .constant("Client SEcret"),
+        settingsURL: .constant("https://settings.example.com"),
+        redirectURI: .constant("https://redirect.example.com"),
+        optionsSheetIsPresented: .constant(false)
+    )
 }

@@ -7,6 +7,7 @@
 import Foundation
 import OIDCLite
 
+// get latest version from full XCreds
 struct IDToken:Decodable {
     let iss,sub:String
     let aud:StringOrArray
