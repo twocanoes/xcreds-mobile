@@ -90,6 +90,8 @@ extension OIDCLite.TokenResponse {
                                jsonDict: [:])
     }
 }
+
+#if DEBUG
 #Preview("Success") {
     FetchedTokenView(status: .fetched(.preview))
 }
@@ -105,4 +107,4 @@ extension OIDCLite.TokenResponse {
 #Preview("Failure") {
     FetchedTokenView(status: .failed("Failure text"))
 }
-
+#endif

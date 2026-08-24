@@ -54,6 +54,7 @@ struct JWTCompleteDetailsSection: View {
 
 }
 
+#if DEBUG
 #Preview("JWT") {
     List {
         JWTDetailSection(idToken: .preview)
@@ -65,3 +66,4 @@ struct JWTCompleteDetailsSection: View {
         JWTDetailSection(idToken: .preview)
     }
 }
+#endif
