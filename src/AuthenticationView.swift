@@ -201,38 +201,38 @@ struct AuthenticationView: View {
                             .ignoresSafeArea()
                     }
                     else {
-                        Text("Congratuations! You have successfully authenticated to your Identity Provider! Below is the contents of your identity token returned from the identity provider. Tap Refresh to try again.")
-                            .font(.title)
-                            .padding()
-                        
-                        Text("OIDC ID Token")
-
-                        if let credentials = credentials,
-                            let dict = credentials.dictionary,
-                            let idToken = dict["idToken"] as? IDToken {
-                            
-                            List{
-                                IDTokenPrint(key: "email", value: idToken.email ?? "")
-                                IDTokenPrint(key: "sub", value: idToken.sub)
-                                IDTokenPrint(key: "iss", value: idToken.iss )
-                                switch idToken.aud {
-                                case .string(let string):
-                                    IDTokenPrint(key: "aud", value:  string)
-
-                                case .array(let array):
-                                    IDTokenPrint(key: "aud", value:  array.description)
-
-                                }
-                                IDTokenPrint(key: "iat", value: "\(idToken.iat)" )
-                                IDTokenPrint(key: "exp", value: "\(idToken.exp)" )
-                                IDTokenPrint(key: "unique_name", value: idToken.unique_name ?? "" )
-                                IDTokenPrint(key: "given_name", value: idToken.given_name ?? "" )
-                                IDTokenPrint(key: "family_name", value: idToken.family_name ?? "" )
-                                IDTokenPrint(key: "name", value: idToken.name ?? "" )
-
-                            }
-
-                        }
+//                        Text("Congratuations! You have successfully authenticated to your Identity Provider! Below is the contents of your identity token returned from the identity provider. Tap Refresh to try again.")
+//                            .font(.title)
+//                            .padding()
+//                        
+//                        Text("OIDC ID Token")
+//
+//                        if let credentials = credentials,
+//                            let dict = credentials.dictionary,
+//                            let idToken = dict["idToken"] as? IDToken {
+//                            
+//                            List{
+//                                IDTokenPrint(key: "email", value: idToken.email ?? "")
+//                                IDTokenPrint(key: "sub", value: idToken.sub)
+//                                IDTokenPrint(key: "iss", value: idToken.iss )
+//                                switch idToken.aud {
+//                                case .string(let string):
+//                                    IDTokenPrint(key: "aud", value:  string)
+//
+//                                case .array(let array):
+//                                    IDTokenPrint(key: "aud", value:  array.description)
+//
+//                                }
+//                                IDTokenPrint(key: "iat", value: "\(idToken.iat)" )
+//                                IDTokenPrint(key: "exp", value: "\(idToken.exp)" )
+//                                IDTokenPrint(key: "unique_name", value: idToken.unique_name ?? "" )
+//                                IDTokenPrint(key: "given_name", value: idToken.given_name ?? "" )
+//                                IDTokenPrint(key: "family_name", value: idToken.family_name ?? "" )
+//                                IDTokenPrint(key: "name", value: idToken.name ?? "" )
+//
+//                            }
+//
+//                        }
                     }
                 }
                 VStack{
@@ -278,36 +278,36 @@ struct AuthenticationView: View {
                         }
                         if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSettingsButton.rawValue)==true{
                             Spacer()
-                            Button(action:{
-                                optionsSheetIsPresented=true
-                            }) {
-                                Image(systemName: "gear.circle.fill")
-                                    .resizable() // This allows the image to be resized
-                                    .frame(width: 25, height: 25) // This sets the size of the image
-                                
-                            }
-//                            .controlSize(.extraLarge)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .padding(.trailing, 8)
-                            .sheet(isPresented: $optionsSheetIsPresented) {
-                                OptionsSheet(
-                                    discoveryURL: $discoveryURL,
-                                    clientID: $clientID,
-                                    clientSecret: $clientSecret,
-                                    settingsURL: $settingsURL,
-                                    redirectURI: $redirectURI,
-                                    optionsSheetIsPresented: $optionsSheetIsPresented
-                                )
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .keyboardShortcut(",")
-                            .labelStyle(.iconOnly)
-                            .padding()
-                            .onChange(of: optionsSheetIsPresented) { oldValue, newValue in
-                                if newValue == false {
-                                    webView.tokenManager.resetOIDC()
-                                }
-                            }
+//                            Button(action:{
+//                                optionsSheetIsPresented=true
+//                            }) {
+//                                Image(systemName: "gear.circle.fill")
+//                                    .resizable() // This allows the image to be resized
+//                                    .frame(width: 25, height: 25) // This sets the size of the image
+//                                
+//                            }
+////                            .controlSize(.extraLarge)
+//                            .frame(maxWidth: .infinity, alignment: .trailing)
+//                            .padding(.trailing, 8)
+//                            .sheet(isPresented: $optionsSheetIsPresented) {
+//                                OptionsSheet(
+//                                    discoveryURL: $discoveryURL,
+//                                    clientID: $clientID,
+//                                    clientSecret: $clientSecret,
+//                                    settingsURL: $settingsURL,
+//                                    redirectURI: $redirectURI,
+//                                    optionsSheetIsPresented: $optionsSheetIsPresented
+//                                )
+//                            }
+//                            .buttonStyle(.borderedProminent)
+//                            .keyboardShortcut(",")
+//                            .labelStyle(.iconOnly)
+//                            .padding()
+//                            .onChange(of: optionsSheetIsPresented) { oldValue, newValue in
+//                                if newValue == false {
+//                                    webView.tokenManager.resetOIDC()
+//                                }
+//                            }
                             
                         }
                         

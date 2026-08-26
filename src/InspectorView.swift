@@ -50,7 +50,7 @@ struct InspectorView: View {
                     .font(.title)
                 Form {
                     TextField(value: $discoverURL, format: .url) {
-                        Text("URL")
+                        Text("Discovery URL")
                     }
                     .onSubmit {
                         // check for nil URL

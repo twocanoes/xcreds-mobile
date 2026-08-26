@@ -20,7 +20,18 @@ struct FetchedTokenView: View {
     var status: FetchedToken
     var body: some View {
         switch status {
-            case .prefetch:
+        case .prefetch:
+            VStack{
+                Text("Welcome to XCreds Mobile. ")
+                    .font(.title)
+                    .padding()
+                Text("Easily connect to an OIDC service and display the OIDC IDToken. XCreds Mobile makes troubleshooting OIDC issues easy.")
+                    .font(.subheadline)
+                    .padding()
+            }
+            .frame(width: 500, height:250)
+            
+            .border(.black)
                 ContentUnavailableView("Ready", systemImage: "person.text.rectangle", description: Text("Fill out the OIDC settings and tap Fetch"))
             case .fetching:
                 TokenDetailView(token: .placeholder, placeholder: IDToken.placeholder)

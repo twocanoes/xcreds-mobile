@@ -41,7 +41,6 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
 
     func showLoginSuccessful(credentials: Creds? = nil){
 
-        if UserDefaults.standard.bool(forKey: PrefKeys.shouldHideOIDCResults.rawValue)==true{
             UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { success in
                 if !success {
                     TCSLogErrorWithMark("Did not successfully transition out of guided access session.")
@@ -81,11 +80,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
                 }
                 
             })
-        }
-        else {
-            delegate?.loggedIn(credentials: credentials)
-            
-        }
+        
         
     }
     func postLoginWebhook(info: [String: String]) {
