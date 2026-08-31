@@ -118,6 +118,8 @@ struct InspectorView: View {
                         else {
                             //nil response?
                             TCSLogErrorWithMark("No error, but not")
+                            fetchResponse =
+                                .failed("Please check your settings and try again.")
 
                         }
                     }
