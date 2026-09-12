@@ -18,6 +18,14 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
     var tokenManager=TokenManager()
     var password:String?
     var delegate:LoginWebViewDelegate?=nil
+    
+    
+    func setOIDCSettings(discoveryURL:String?, clientID:String?, clientSecret:String?, redirectURI:String?){
+        tokenManager.discoveryURL = discoveryURL
+        tokenManager.clientID = clientID
+        tokenManager.clientSecret = clientSecret
+        tokenManager.redirectURI = redirectURI
+    }
     func invalidCredentials() {
         
     }
@@ -121,6 +129,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
             return
         }
 
+        self.delegate?.loggedIn(credentials: credentials)
         try? KeychainUtil().storeDataInKeychain(account: "xcreds-mobile", service: "xcreds-mobile", data:data , group:"UXP6YEHSPW.com.twocanoes.xcreds-mobile")
         showLoginSuccessful(credentials: credentials)
     }
@@ -143,7 +152,7 @@ class WebView:WKWebView, TokenManagerFeedbackDelegate {
             do {
                 
                 self.customUserAgent = "Mozilla/5.0 (iPad; CPU OS 18_7_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1"
-                if let discoveryURL = UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue), discoveryURL.isEmpty==false{
+                if let discoveryURL=tokenManager.discoveryURL, discoveryURL.isEmpty==false{
                     let url = try await self.getOidcLoginURL()
                     TCSLogWithMark("URL: \(url)");
                 

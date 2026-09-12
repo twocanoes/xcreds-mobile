@@ -7,6 +7,7 @@
 
 import SwiftUI
 import OIDCLite
+import WebKit
 
 
 let hasManagedSettings = false
@@ -35,6 +36,18 @@ struct InspectorView: View {
     @State private var resource: String = ""
     @State private var fetchResponse: FetchedToken = .prefetch
     @State private var idToken: IDToken?
+    @State private var showWebView:Bool=false
+    @State private var webView = WebView()
+
+    @State private var loadPage: Bool = true
+    @State private var resetOIDC = false
+    @State private var isLoggedIn:Bool = false
+    @State private var credentials:Creds?  = nil
+
+    
+   
+
+
     private var isButtonDisabled: Bool {
         if case .fetching = fetchResponse {
             return true
@@ -46,6 +59,7 @@ struct InspectorView: View {
     var body: some View {
         NavigationSplitView {
             VStack {
+                
                 Text("OIDC Settings")
                     .font(.title)
                 Form {
@@ -73,7 +87,7 @@ struct InspectorView: View {
                         .autocorrectionDisabled()
                         .autocapitalization(.none)
                     Toggle("Use ROPG", isOn: $useROPG)
-                        .disabled(true)
+//                        .disabled(true)
                     if useROPG {
                         ROPGFields
                     }
@@ -103,8 +117,32 @@ struct InspectorView: View {
         #if DEBUG
         .onAppear {
             try? prepopulate()
+            
+            webView.setOIDCSettings(discoveryURL: discoverURL?.absoluteString, clientID: clientID, clientSecret: clientSecret, redirectURI: redirectURI?.absoluteString)
         }
         #endif
+        .sheet(isPresented: $showWebView) {
+                
+            LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC, isLoggedIn: $isLoggedIn, credentials: $credentials )
+                .refreshable{
+                    webView.loadPage()
+                    
+                }
+            //                .frame(width: 150,height: 150)
+                .ignoresSafeArea()
+        }
+        .onChange(of: credentials) { oldValue, newValue in
+
+            if let c = newValue {
+
+                let tokenResponse = OIDCLite.TokenResponse(accessToken: c.accessToken, idToken: c.idToken, refreshToken: c.refreshToken, expiresIn: nil, tokenType: "", scope: scopes, jsonDict:[:])
+
+                fetchResponse = .fetched(tokenResponse)
+                showWebView=false
+                loadPage=true
+            }
+        }
+        
     }
     var fetchButton: some View {
         Button {
@@ -142,6 +180,10 @@ struct InspectorView: View {
                     }
                 }
             }
+            else {
+                loadPage=true
+                showWebView=true
+            }
         } label: {
             if isButtonDisabled {
                 Image(systemName: "progress.indicator")
@@ -152,6 +194,7 @@ struct InspectorView: View {
             }
         }
         .disabled(isButtonDisabled)
+        
     }
     @ViewBuilder
     var ROPGFields: some View {

@@ -7,7 +7,7 @@
 
 import Foundation
 import OIDCLite
-struct Creds:Codable{
+struct Creds:Codable, Equatable{
     var username:String? = ""
     var password:String? = ""
     public var accessToken: String?

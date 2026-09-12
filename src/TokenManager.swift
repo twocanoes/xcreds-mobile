@@ -48,7 +48,13 @@ protocol TokenManagerFeedbackDelegate {
 @available(macOS, deprecated: 11)
 class TokenManager {
 
-
+    var discoveryURL = UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue)
+    var clientSecret = UserDefaults.standard.string(forKey: PrefKeys.clientSecret.rawValue)
+    var clientID = UserDefaults.standard.string(forKey: PrefKeys.clientID.rawValue)
+    var resource = UserDefaults.standard.string(forKey: PrefKeys.resource.rawValue)
+    var scopes = UserDefaults.standard.string(forKey: PrefKeys.scopes.rawValue)
+    var redirectURI = UserDefaults.standard.string(forKey: PrefKeys.redirectURI.rawValue)
+    
     struct UserAccountInfo {
         var fullName:String?
         var firstName:String?
@@ -76,7 +82,6 @@ class TokenManager {
     let defaults = UserDefaults.standard
     private var oidcLocal:OIDCLite?
     func oidc() async throws -> OIDCLite {
-        var scopes: [String]?
         var additionalParameters:[String:String] =  [:]
 
         if let oidcPrivate = oidcLocal {
@@ -84,11 +89,9 @@ class TokenManager {
 
             return oidcPrivate
         }
-        let clientSecret = UserDefaults.standard.string(forKey: PrefKeys.clientSecret.rawValue)
-        let clientID = UserDefaults.standard.string(forKey: PrefKeys.clientID.rawValue)
-        let resource = UserDefaults.standard.string(forKey: PrefKeys.resource.rawValue)
-        if let scopesRaw = UserDefaults.standard.string(forKey: PrefKeys.scopes.rawValue) {
-            scopes = scopesRaw.components(separatedBy: " ")
+        var scopesArray:[String] = []
+        if let scopes = scopes {
+            scopesArray = scopes.components(separatedBy: " ")
         }
 //        if UserDefaults.standard.bool(forKey: PrefKeys.shouldSetGoogleAccessTypeToOffline.rawValue) == true {
 //
@@ -102,7 +105,7 @@ class TokenManager {
 
 
         
-        let oidcLite = OIDCLite(discoveryURL: UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue) ?? "NONE", clientID: clientID ?? "NONE", clientSecret: clientSecret, redirectURI: UserDefaults.standard.string(forKey: PrefKeys.redirectURI.rawValue), scopes: scopes, additionalParameters:additionalParameters.count==0 ? nil:additionalParameters, resource: resource)
+        let oidcLite = OIDCLite(discoveryURL: discoveryURL ?? "NONE", clientID: clientID ?? "NONE", clientSecret: clientSecret, redirectURI: redirectURI,  scopes: scopesArray, additionalParameters:additionalParameters.count==0 ? nil:additionalParameters, resource: resource)
         try await oidcLite.getEndpoints()
         oidcLocal = oidcLite
         return oidcLite

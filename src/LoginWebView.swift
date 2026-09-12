@@ -33,7 +33,6 @@ struct LoginWebView: UIViewRepresentable, LoginWebViewDelegate{
     func updateUIView(_ uiView: WebView, context: Context) {
         webView.delegate=self
         readDefaults()
-
         updatePrefsFromManagedPrefs()
         
         if resetOIDC==true {
