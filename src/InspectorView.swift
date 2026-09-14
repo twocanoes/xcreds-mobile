@@ -261,7 +261,6 @@ struct InspectorView: View {
     }
 }
 
-#if DEBUG
 extension InspectorView {
     func prepopulate(customData:Data?=nil) throws {
         
@@ -290,7 +289,6 @@ extension InspectorView {
         fetchResponse = .prefetch
     }
 }
-#endif
 
 #Preview {
     InspectorView()
