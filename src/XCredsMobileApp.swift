@@ -16,6 +16,7 @@ struct XCredsMobileApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+               
         }
     }
 }

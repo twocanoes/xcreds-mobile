@@ -114,7 +114,16 @@ struct InspectorView: View {
         } detail: {
             FetchedTokenView(status: fetchResponse)
         }
-        #if DEBUG
+        .onOpenURL(perform: { url in
+            if let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true), let base=components.host{
+                
+                
+                let decoded=base64UrlDecode(value: base)
+                try? prepopulate(customData: decoded)
+            }
+        })
+        
+#if DEBUG
         .onAppear {
             try? prepopulate()
             
@@ -254,12 +263,20 @@ struct InspectorView: View {
 
 #if DEBUG
 extension InspectorView {
-    func prepopulate() throws {
-        guard let url = Bundle.main.url(forResource: "creds", withExtension: "plist")
-               else {
-            return
+    func prepopulate(customData:Data?=nil) throws {
+        
+        var data = Data()
+        if let customData = customData {
+            data=customData
         }
-        let data = try Data(contentsOf: url)
+        else {
+            guard let url = Bundle.main.url(forResource: "creds", withExtension: "plist")
+            else {
+                return
+            }
+            
+            data = try Data(contentsOf: url)
+        }
         let obj = try PropertyListSerialization.propertyList(from: data, format: nil) as! [String : Any]
         discoverURL = URL(string: (obj["discoveryURL"] as? String) ?? "")
         clientID = (obj["clientID"] as? String) ?? ""
