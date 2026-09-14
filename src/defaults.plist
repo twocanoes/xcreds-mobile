@@ -5,7 +5,7 @@
 	<key>shouldShowSystemInfoButton</key>
 	<true/>
 	<key>shouldExitOnSuccessfulAuth</key>
-	<true/>
+	<false/>
 	<key>shouldActivateSystemInfoButton</key>
 	<false/>
 	<key>systemInfoButtonTitle</key>
