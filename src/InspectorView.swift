@@ -118,7 +118,6 @@ struct InspectorView: View {
         .onAppear {
             try? prepopulate()
             
-            webView.setOIDCSettings(discoveryURL: discoverURL?.absoluteString, clientID: clientID, clientSecret: clientSecret, redirectURI: redirectURI?.absoluteString)
         }
         #endif
         .sheet(isPresented: $showWebView) {
@@ -146,6 +145,7 @@ struct InspectorView: View {
     }
     var fetchButton: some View {
         Button {
+            
             if useROPG {
                 fetchResponse = .fetching
                 Task {
@@ -181,7 +181,11 @@ struct InspectorView: View {
                 }
             }
             else {
+                resetOIDC=true
+
                 loadPage=true
+                webView.setOIDCSettings(discoveryURL: discoverURL?.absoluteString, clientID: clientID, clientSecret: clientSecret, redirectURI: redirectURI?.absoluteString)
+
                 showWebView=true
             }
         } label: {
