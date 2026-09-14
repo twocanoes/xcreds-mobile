@@ -39,6 +39,7 @@ struct AuthenticationView: View {
     @State private var isLoggedIn:Bool = false
     @State private var credentials:Creds?  = nil
     @State private var wifiSelection:WifiNetwork?
+    @State private var licenseState:LicenseChecker.LicenseState?
 
     @Environment(\.webAuthenticationSession) private var webAuthenticationSession
     @Environment(\.authorizationController) private var authorizationController
@@ -46,7 +47,7 @@ struct AuthenticationView: View {
 
     @AppStorage(PrefKeys.webHookAuthToken.rawValue) var webHookAuthToken: String?
     @AppStorage(PrefKeys.webHookURLString.rawValue) var webHookURLString: String?
-    
+    @AppStorage(PrefKeys.license.rawValue) var license: Data?
     
     let currentDate = Date()
     
@@ -60,79 +61,7 @@ struct AuthenticationView: View {
         formatter.dateFormat = "hh:mm"
         return formatter
     }()
-    /*
-     if let imagePathURL = DefaultsOverride.standardOverride.string(forKey: PrefKeys.loginWindowBackgroundImageURL.rawValue), let image = NSImage.imageFromPathOrURL(pathURLString: imagePathURL){
-     
-     */
-    //    fileprivate func LocalLoginView() -> ZStack<TupleView<(some View, some View)>> {
-    //        return ZStack{
-    //            Image("DefaultAerial")
-    //                .resizable()
-    //                .scaledToFill()
-    //                .frame(minWidth: 0)
-    //                .edgesIgnoringSafeArea(.all)
-    //
-    //            VStack {
-    //
-    //                if samActive==false {
-    //
-    //                    Text("Single App Mode Not Enabled")
-    //                        .font(.title)
-    //                        .bold()
-    //                        .foregroundStyle(.red)
-    //                        .padding(.top)
-    //                }
-    //                Text(dateFormatter.string(from: currentDate))
-    //                    .font(.system(size: 28))
-    //                    .foregroundColor(.white)
-    //                    .opacity(0.5)
-    //                    .bold()
-    //                    .padding(.top, 80)
-    //                Text(timeFormatter.string(from: currentDate))
-    //                    .font(.system(size: 110))
-    //                    .foregroundColor(.white)
-    //                    .opacity(0.5)
-    //                    .bold()
-    //                    .frame(height:60)
-    //                Spacer()
-    //
-    //                TextField("Username", text: $username, prompt: Text("Username").foregroundColor(.black))
-    //                    .font(.system(size: 14))
-    //                    .padding(.leading, 15)
-    //                    .frame(width: 200, height:30)
-    //                    .background(.regularMaterial)
-    //                    .cornerRadius(20)
-    //                    .autocorrectionDisabled(true)
-    //
-    //                SecureField("Password", text: $password, prompt: Text("Enter Password").foregroundColor(.black))
-    //                    .textContentType(.none)
-    //                    .autocorrectionDisabled(true)
-    //
-    //                    .font(.system(size: 14))
-    //                    .padding(.leading, 15)
-    //                    .frame(width: 200, height:30)
-    //                    .background(.regularMaterial)
-    //                    .cornerRadius(20)
-    //
-    //                    .onSubmit {
-    //                        loggedIn=true
-    //                        UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-    //                            samActive=false
-    //                            TCSLogDebugWithMark("\(#file):\(#line) - \("Login webhook called in \(#function)")")
-    //                            postWebhookEvent(.login)
-    //                        })
-    //                    }
-    //
-    //
-    //
-    //
-    //            }
-    //            .padding(.bottom,50)
-    //
-    //        }
-    //
-    //    }
-    // Pull version and build info from bundle.
+  
     func versionString() -> String? {
         let fullVersionString: String?
         if let bundle = Bundle.findBundleWithName(name: "XCreds"),
@@ -166,6 +95,19 @@ struct AuthenticationView: View {
         }
     }
     
+    fileprivate func LoginWindow() -> some View {
+        let width = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowWidth.rawValue))
+        let height = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowHeight.rawValue))
+
+        return LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC, isLoggedIn: $isLoggedIn, credentials: $credentials )
+            .refreshable{
+                webView.loadPage()
+                
+            }
+            .frame(width: width > 150 ? width: nil,height: height > 150 ? height: nil)
+            .ignoresSafeArea()
+    }
+    
     var body: some View {
         
         VStack {
@@ -182,57 +124,45 @@ struct AuthenticationView: View {
                 }
                 
                 VStack{
-                    if UserDefaults.standard.string(forKey: PrefKeys.discoveryURL.rawValue) == nil {
-                        
-                        Text("No configuration detected. Please install a configuration profile." )
-                            .font(.title)
-                            .foregroundStyle(.red)
-                    }
-                    let width = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowWidth.rawValue))
-                    let height = CGFloat(UserDefaults.standard.float(forKey: PrefKeys.loginWindowHeight.rawValue))
-                    
-                    if isLoggedIn == false {
-                        LoginWebView(webView:$webView, loadPage:$loadPage, resetOIDC: $resetOIDC, isLoggedIn: $isLoggedIn, credentials: $credentials )
-                            .refreshable{
-                                webView.loadPage()
-                                
+
+                    if let licenseState = licenseState{
+                        switch licenseState{
+                            
+                        case .valid(expires: let expires):
+                            if expires<15{
+                                Text("License key will expired in \(expires) days." )
+                                    .font(.title)
+                                    .foregroundStyle(.red)
                             }
-                            .frame(width: width > 150 ? width: nil,height: height > 150 ? height: nil)
-                            .ignoresSafeArea()
-                    }
-                    else {
-//                        Text("Congratuations! You have successfully authenticated to your Identity Provider! Below is the contents of your identity token returned from the identity provider. Tap Refresh to try again.")
-//                            .font(.title)
-//                            .padding()
-//                        
-//                        Text("OIDC ID Token")
-//
-//                        if let credentials = credentials,
-//                            let dict = credentials.dictionary,
-//                            let idToken = dict["idToken"] as? IDToken {
-//                            
-//                            List{
-//                                IDTokenPrint(key: "email", value: idToken.email ?? "")
-//                                IDTokenPrint(key: "sub", value: idToken.sub)
-//                                IDTokenPrint(key: "iss", value: idToken.iss )
-//                                switch idToken.aud {
-//                                case .string(let string):
-//                                    IDTokenPrint(key: "aud", value:  string)
-//
-//                                case .array(let array):
-//                                    IDTokenPrint(key: "aud", value:  array.description)
-//
-//                                }
-//                                IDTokenPrint(key: "iat", value: "\(idToken.iat)" )
-//                                IDTokenPrint(key: "exp", value: "\(idToken.exp)" )
-//                                IDTokenPrint(key: "unique_name", value: idToken.unique_name ?? "" )
-//                                IDTokenPrint(key: "given_name", value: idToken.given_name ?? "" )
-//                                IDTokenPrint(key: "family_name", value: idToken.family_name ?? "" )
-//                                IDTokenPrint(key: "name", value: idToken.name ?? "" )
-//
-//                            }
-//
-//                        }
+                            
+                            if isLoggedIn == false {
+                                LoginWindow()
+                            }
+                        case .invalid:
+                            VStack{}
+
+                        case .trial(expires: let expires):
+                            if expires<15{
+                                Text("Trial will expire in \(expires) days." )
+                                    .font(.title)
+                                    .foregroundStyle(.red)
+                            }
+                            if isLoggedIn == false {
+                                LoginWindow()
+                            }
+
+                        case .trialExpired, .expired:
+                            Text("License key expired." )
+                                .font(.title)
+                                .foregroundStyle(.red)
+                        
+                        @unknown default:
+                            Text("License key expired." )
+                                .font(.title)
+                                .foregroundStyle(.red)
+
+                        }
+                        
                     }
                 }
                 VStack{
@@ -278,36 +208,6 @@ struct AuthenticationView: View {
                         }
                         if UserDefaults.standard.bool(forKey: PrefKeys.shouldShowSettingsButton.rawValue)==true{
                             Spacer()
-//                            Button(action:{
-//                                optionsSheetIsPresented=true
-//                            }) {
-//                                Image(systemName: "gear.circle.fill")
-//                                    .resizable() // This allows the image to be resized
-//                                    .frame(width: 25, height: 25) // This sets the size of the image
-//                                
-//                            }
-////                            .controlSize(.extraLarge)
-//                            .frame(maxWidth: .infinity, alignment: .trailing)
-//                            .padding(.trailing, 8)
-//                            .sheet(isPresented: $optionsSheetIsPresented) {
-//                                OptionsSheet(
-//                                    discoveryURL: $discoveryURL,
-//                                    clientID: $clientID,
-//                                    clientSecret: $clientSecret,
-//                                    settingsURL: $settingsURL,
-//                                    redirectURI: $redirectURI,
-//                                    optionsSheetIsPresented: $optionsSheetIsPresented
-//                                )
-//                            }
-//                            .buttonStyle(.borderedProminent)
-//                            .keyboardShortcut(",")
-//                            .labelStyle(.iconOnly)
-//                            .padding()
-//                            .onChange(of: optionsSheetIsPresented) { oldValue, newValue in
-//                                if newValue == false {
-//                                    webView.tokenManager.resetOIDC()
-//                                }
-//                            }
                             
                         }
                         
@@ -386,6 +286,13 @@ struct AuthenticationView: View {
             }
         })
         .onAppear(){
+            
+           
+            //verify license
+            
+            licenseState = LicenseChecker.currentLicenseState(bundleID: Bundle.main.bundleIdentifier ?? "")
+                
+           
             readDefaults()
             if UserDefaults.standard.bool(forKey: PrefKeys.shouldActivateSystemInfoButton.rawValue)==true{
                 showingPopover = true
@@ -412,22 +319,6 @@ struct AuthenticationView: View {
                     postWebhookEvent(.login)
                 })
             }
-            //                UIAccessibility.requestGuidedAccessSession(enabled: false, completionHandler: { enabled in
-            //                    try? await LocalNotificationManager.sharedManager.requestAuthorizationForNotifications()
-            //
-            //                    samActive=false
-            //                })
-            //
-            //
-            //                Task{
-            //                    if await LocalNotificationManager.sharedManager.checkCurrentAuthorizationSetting() == .notDetermined {
-            //
-            //                    }
-            //                }
-            //            }
-            
-        
-            
             loadPage=true
             readDefaults()
             updatePrefsFromManagedPrefs()

@@ -21,6 +21,9 @@ struct RootView: View {
     @AppStorage(PrefKeys.redirectURI.rawValue) 
     var redirectURI:String = ""
 
+    @AppStorage(PrefKeys.license.rawValue)
+    var license: Data = Data()
+
     var body: some View {
         if showAuthentication {
             AuthenticationView(
@@ -38,7 +41,7 @@ struct RootView: View {
     var showAuthentication: Bool {
         return !discoveryURL.isEmpty &&
             !clientSecret.isEmpty &&
-            !redirectURI.isEmpty
+        !redirectURI.isEmpty
     }
 }
 

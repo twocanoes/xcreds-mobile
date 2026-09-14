@@ -19,6 +19,8 @@
 		76B8073B2F6A38BC00ECD82A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */; };
 		76B8073D2F6A38BC00ECD82A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */; };
 		76B8074E2F6A38BD00ECD82A /* xcreds-mobile-widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		76EE788C30564514004479C3 /* ProductLicense.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76EE7887305644EF004479C3 /* ProductLicense.framework */; };
+		76EE788D30564514004479C3 /* ProductLicense.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 76EE7887305644EF004479C3 /* ProductLicense.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		76F8343C2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist in Resources */ = {isa = PBXBuildFile; fileRef = 76F8343B2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist */; };
 		AAFB24612F9FF98200F1C98A /* NSBundle+FindBundlePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B0033F2F491A9E00C4B98C /* NSBundle+FindBundlePath.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +40,20 @@
 			remoteGlobalIDString = 76B807372F6A38BC00ECD82A;
 			remoteInfo = "xcreds-mobile-widgetExtension";
 		};
+		76EE7886305644EF004479C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 76EE7878305644EE004479C3 /* ProductLicense.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = AADB87F61FE9B8780055CE94;
+			remoteInfo = ProductLicense;
+		};
+		76EE788A30564502004479C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 76EE7878305644EE004479C3 /* ProductLicense.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = AADB87F51FE9B8780055CE94;
+			remoteInfo = ProductLicense;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +67,17 @@
 				7664F8592FA44F33008ADAFE /* XCreds Password.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		76EE788E30564514004479C3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				76EE788D30564514004479C3 /* ProductLicense.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -101,6 +128,7 @@
 		76B807382F6A38BC00ECD82A /* xcreds-mobile-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "xcreds-mobile-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76B8073A2F6A38BC00ECD82A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		76B8073C2F6A38BC00ECD82A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		76EE7878305644EE004479C3 /* ProductLicense.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ProductLicense.xcodeproj; path = ../productlicense/ProductLicense.xcodeproj; sourceTree = SOURCE_ROOT; };
 		76F8343B2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "com.twocanoes.xcreds-mobile.plist"; path = "ProfileManifests/Manifests/ManagedPreferencesApplications/com.twocanoes.xcreds-mobile.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -186,6 +214,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76EE788C30564514004479C3 /* ProductLicense.framework in Frameworks */,
 				7605C3D32F268408009233BC /* OIDCLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +289,7 @@
 		76B6A6512F25542B0079229D = {
 			isa = PBXGroup;
 			children = (
+				76EE7878305644EE004479C3 /* ProductLicense.xcodeproj */,
 				76F8343B2FA5570B00C4D5F1 /* com.twocanoes.xcreds-mobile.plist */,
 				76532F422F68E13600433814 /* XCreds Mobile.entitlements */,
 				76113D432F25BA8F002F8FD1 /* src */,
@@ -291,6 +321,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		76EE7882305644EE004479C3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				76EE7887305644EF004479C3 /* ProductLicense.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -302,10 +340,12 @@
 				76113D3F2F25BA8F002F8FD1 /* Frameworks */,
 				76113D402F25BA8F002F8FD1 /* Resources */,
 				76B8074F2F6A38BD00ECD82A /* Embed Foundation Extensions */,
+				76EE788E30564514004479C3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				76EE788B30564502004479C3 /* PBXTargetDependency */,
 				76B8074D2F6A38BD00ECD82A /* PBXTargetDependency */,
 				7664F8582FA44F33008ADAFE /* PBXTargetDependency */,
 			);
@@ -402,6 +442,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 76B6A65B2F25542B0079229D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 76EE7882305644EE004479C3 /* Products */;
+					ProjectRef = 76EE7878305644EE004479C3 /* ProductLicense.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				76113D412F25BA8F002F8FD1 /* XCreds Mobile */,
@@ -410,6 +456,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		76EE7887305644EF004479C3 /* ProductLicense.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ProductLicense.framework;
+			remoteRef = 76EE7886305644EF004479C3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		76113D402F25BA8F002F8FD1 /* Resources */ = {
@@ -477,6 +533,11 @@
 			target = 76B807372F6A38BC00ECD82A /* xcreds-mobile-widgetExtension */;
 			targetProxy = 76B8074C2F6A38BD00ECD82A /* PBXContainerItemProxy */;
 		};
+		76EE788B30564502004479C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ProductLicense;
+			targetProxy = 76EE788A30564502004479C3 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -524,6 +585,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_BRIDGING_HEADER_IS_INTERNAL = NO;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "src/XCreds-Mobile-Bridging-Header.h";
@@ -579,6 +641,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_BRIDGING_HEADER_IS_INTERNAL = NO;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "src/XCreds-Mobile-Bridging-Header.h";
